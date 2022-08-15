@@ -8,8 +8,9 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
     # compare institution
     curriculum1.institution == curriculum2.institution ? println("Curriculum 1 and Curriculum 2 have the same institution: $(curriculum1.institution)") : println("Curriculum 1 has institution $(curriculum1.institution) and Curriculum 2 has institution $(curriculum2.institution)")
     # compare degree_type
-
+    curriculum1.degree_type == curriculum2.degree_type ? println("Curriculum 1 and Curriculum 2 have the same degree type: $(curriculum1.degree_type)") : println("Curriculum 1 has degree type $(curriculum1.degree_type) and Curriculum 2 has institution $(curriculum2.degree_type)")
     # compare system_type
+
     # compare CIP
     # compare num_courses
     # compare credit_hours
