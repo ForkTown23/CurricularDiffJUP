@@ -44,6 +44,33 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
     end
     # requisites
+    # collate all the prerequisite names from course 1
+    course1_prereqs = Set()
+    for (key, value) in course1.requisites
+        # get the course name
+        course_name = curriculum1.courses[key].name
+        push!(course1_prereqs, course_name)
+    end
+
+    course2_prereqs = Set()
+    for (key, value) in course2.requisites
+        # get the course name
+        course_name = curriculum2.courses[key].name
+        push!(course2_prereqs, course_name)
+    end
+
+    println("The sets of prerequisites being equal is $(issetequal(course1_prereqs, course2_prereqs))")
+    if (!issetequal(course1_prereqs, course2_prereqs))
+        println("Courses in course 1's prereq list:")
+        for course in course1_prereqs
+            println("\t$(course)")
+        end
+        println("Courses in course 2's prereq list:")
+        for course in course2_prereqs
+            println("\t$(course)")
+        end
+    end
+
 
 end
 
