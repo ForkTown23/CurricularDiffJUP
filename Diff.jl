@@ -19,6 +19,25 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
     curriculum1.credit_hours == curriculum2.credit_hours ? println("Curriculum 1 and 2 have the same number of credit hours: $(curriculum1.credit_hours)") : println("Curriculum 1 has number of credit hours $(curriculum1.credit_hours) and Curriculum 2 has number of credit hourse $(curriculum2.credit_hours)")
     # compare metrics
 
+    try
+        basic_metrics(curriculum1)
+    catch
+    end
+    try
+        basic_metrics(curriculum2)
+    catch
+    end
+    # complexity and max complexity
+    if (curriculum1.metrics["complexity"][1] == curriculum2.metrics["complexity"][1])
+        println("Curriculum 1 and Curriculum 2 have the same total complexity")
+    else
+        println("Curriculum 1 has a total complexity score of $(curriculum1.metrics["complexity"][1]) and Curriculum2 has a total complexity score $(curriculum2.metrics["complexity"][1])")
+    end
+    # centrality and max centrality
+    # blocking factor and max blocking factor
+    # delay factor and max delay factor
+
+
     # for each course in curriculum 1, try to find a similarly named course in curriculum 2
     for course in curriculum1.courses
         matching_course = filter(x -> x.name == course.name, curriculum2.courses)
