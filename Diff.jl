@@ -1,7 +1,50 @@
 using CurricularAnalytics
 
-function course_diff(course1::Course, course2::Course)
-    # 
+function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool)
+    # compare:
+    # name
+    course1.name == course2.name ? println("✅Course 1 and Course 2 have the same name: $(course1.name)") : println("❌Course 1 has name $(course1.name) and Course 2 has name $(course2.name)")
+    # credit_hours
+    course1.credit_hours == course2.credit_hours ? println("✅Course 1 and Course 2 have the same credit_hours: $(course1.credit_hours)") : println("❌Course 1 has credit_hours $(course1.credit_hours) and Course 2 has credit_hours $(course2.credit_hours)")
+    # prefix
+    course1.prefix == course2.prefix ? println("✅Course 1 and Course 2 have the same prefix: $(course1.prefix)") : println("❌Course 1 has prefix $(course1.prefix) and Course 2 has prefix $(course2.prefix)")
+    # num
+    course1.num == course2.num ? println("✅Course 1 and Course 2 have the same num: $(course1.num)") : println("❌Course 1 has num $(course1.num) and Course 2 has num $(course2.num)")
+    # institution
+    course1.institution == course2.institution ? println("✅Course 1 and Course 2 have the same institution: $(course1.institution)") : println("❌Course 1 has institution $(course1.institution) and Course 2 has institution $(course2.institution)")
+    # college
+    course1.college == course2.college ? println("✅Course 1 and Course 2 have the same college: $(course1.college)") : println("❌Course 1 has college $(course1.college) and Course 2 has college $(course2.college)")
+    # department
+    course1.department == course2.department ? println("✅Course 1 and Course 2 have the same department: $(course1.department)") : println("❌Course 1 has department $(course1.department) and Course 2 has department $(course2.department)")
+    # canonical_name
+    course1.canonical_name == course2.canonical_name ? println("✅Course 1 and Course 2 have the same canonical_name: $(course1.canonical_name)") : println("❌Course 1 has canonical_name $(course1.canonical_name) and Course 2 has canonical_name $(course2.canonical_name)")
+    # metrics
+    # complexity
+    if (course1.metrics["complexity"] == course2.metrics["complexity"])
+        println("✅Course 1 and Course 2 have the same complexity: $(course1.metrics["complexity"])")
+    else
+        println("❌Course 1 has complexity $(course1.metrics["complexity"]) and Course 2 has complexity $(course2.metrics["complexity"])")
+    end
+    # centrality
+    if (course1.metrics["centrality"] == course2.metrics["centrality"])
+        println("✅Course 1 and Course 2 have the same centrality: $(course1.metrics["centrality"])")
+    else
+        println("❌Course 1 has centrality $(course1.metrics["centrality"]) and Course 2 has centrality $(course2.metrics["centrality"])")
+    end
+    # blocking factor
+    if (course1.metrics["blocking factor"] == course2.metrics["blocking factor"])
+        println("✅Course 1 and Course 2 have the same blocking factor: $(course1.metrics["blocking factor"])")
+    else
+        println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
+    end
+    # delay factor
+    if (course1.metrics["delay factor"] == course2.metrics["delay factor"])
+        println("✅Course 1 and Course 2 have the same delay factor: $(course1.metrics["delay factor"])")
+    else
+        println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
+    end
+    # requisites
+
 end
 
 function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool)
@@ -97,7 +140,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             elseif (length(matching_course) == 1)
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
-                course_diff(course, course2)
+                course_diff(course, course2, curriculum1, curriculum2, verbose)
             else
                 println("Something weird here, we have more than one match")
             end
