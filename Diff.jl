@@ -12,7 +12,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
     # compare system_type
     curriculum1.system_type == curriculum2.system_type ? println("Curriculum 1 and Curriculum 2 have the same system type: $(curriculum1.system_type)") : println("Curriculum 1 has system type $(curriculum1.system_type) and Curriculum 2 has system type $(curriculum2.system_type)")
     # compare CIP
-
+    curriculum1.CIP == curriculum2.CIP ? println("Curriculum 1 and Curriculum 2 have the same CIP: $(curriculum1.CIP)") : println("Curriculum 1 has CIP $(curriculum1.CIP) and Curriculum 2 has CIP $(curriculum2.CIP)")
     # compare num_courses
     # compare credit_hours
     # compare metrics
