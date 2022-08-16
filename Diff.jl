@@ -1,7 +1,7 @@
 using CurricularAnalytics
 
 function course_diff(course1::Course, course2::Course)
-    true
+    # 
 end
 
 function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool)
