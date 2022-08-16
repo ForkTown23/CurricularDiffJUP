@@ -39,6 +39,16 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
         println("Curriculum 1 has a max complexity of $(curriculum1.metrics["max. complexity"]) and Curriculum 2 has a max complexity of $(curriculum2.metrics["max. complexity"])")
     end
     # centrality and max centrality
+    if (curriculum1.metrics["centrality"][1] == curriculum2.metrics["centrality"][1])
+        println("Curriculum 1 and Curriculum 2 have the same total centrality: $(curriculum1.metrics["centrality"][1])")
+    else
+        println("Curriculum 1 has a total centrality score of $(curriculum1.metrics["centrality"][1]) and Curriculum2 has a total centrality score $(curriculum2.metrics["centrality"][1])")
+    end
+    if (curriculum1.metrics["max. centrality"] == curriculum2.metrics["max. centrality"])
+        println("Curriculum 1 and Curriculum 2 have the same max centrality : $(curriculum1.metrics["max. centrality"])")
+    else
+        println("Curriculum 1 has a max centrality of $(curriculum1.metrics["max. centrality"]) and Curriculum 2 has a max centrality of $(curriculum2.metrics["max. centrality"])")
+    end
     # blocking factor and max blocking factor
     # delay factor and max delay factor
 
