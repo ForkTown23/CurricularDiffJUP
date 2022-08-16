@@ -61,7 +61,16 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
         println("Curriculum 1 has a max blocking factor of $(curriculum1.metrics["max. blocking factor"]) and Curriculum 2 has a max blocking factor of $(curriculum2.metrics["max. blocking factor"])")
     end
     # delay factor and max delay factor
-
+    if (curriculum1.metrics["delay factor"][1] == curriculum2.metrics["delay factor"][1])
+        println("Curriculum 1 and Curriculum 2 have the same total delay factor: $(curriculum1.metrics["delay factor"][1])")
+    else
+        println("Curriculum 1 has a total delay factor score of $(curriculum1.metrics["delay factor"][1]) and Curriculum2 has a total delay factor score $(curriculum2.metrics["delay factor"][1])")
+    end
+    if (curriculum1.metrics["max. delay factor"] == curriculum2.metrics["max. delay factor"])
+        println("Curriculum 1 and Curriculum 2 have the same max delay factor : $(curriculum1.metrics["max. delay factor"])")
+    else
+        println("Curriculum 1 has a max delay factor of $(curriculum1.metrics["max. delay factor"]) and Curriculum 2 has a max delay factor of $(curriculum2.metrics["max. delay factor"])")
+    end
 
     # for each course in curriculum 1, try to find a similarly named course in curriculum 2
     for course in curriculum1.courses
