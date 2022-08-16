@@ -1,6 +1,10 @@
 using CurricularAnalytics
 
-function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
+function course_diff(course1::course, course2::course)
+
+end
+
+function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool)
 
     # do the basic comparisons like name, BA/BS etc
     # compare names
@@ -17,8 +21,8 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
     curriculum1.num_courses == curriculum2.num_courses ? println("Curriculum 1 and 2 have the same number of courses: $(curriculum1.num_courses)") : println("Curriculum 1 has number of courses $(curriculum1.num_courses) and Curriculum 2 has number of courses $(curriculum2.num_courses)")
     # compare credit_hours
     curriculum1.credit_hours == curriculum2.credit_hours ? println("Curriculum 1 and 2 have the same number of credit hours: $(curriculum1.credit_hours)") : println("Curriculum 1 has number of credit hours $(curriculum1.credit_hours) and Curriculum 2 has number of credit hourse $(curriculum2.credit_hours)")
+    
     # compare metrics
-
     try
         basic_metrics(curriculum1)
     catch
@@ -81,13 +85,19 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
         metrics_same = false
     end
 
-    # for each course in curriculum 1, try to find a similarly named course in curriculum 2
-    for course in curriculum1.courses
-        matching_course = filter(x -> x.name == course.name, curriculum2.courses)
-        if (length(matching_course) == 0)
-            println("No matching course found for $(course.name)")
-        else
-            println("Match found for $(course.name)")
+    # if the stats don't match up or we asked for a deep dive, take a deep dive!
+    if (!metrics_same || verbose)
+        # for each course in curriculum 1, try to find a similarly named course in curriculum 2
+        for course in curriculum1.courses
+            # this is the catch: MATH 20A and MATH 20A or 10A are not going to match
+            matching_course = filter(x -> x.name == course.name, curriculum2.courses)
+            if (length(matching_course) == 0)
+                println("No matching course found for $(course.name)")
+            elseif (length(matching_course) == 1)
+                println("Match found for $(course.name)")
+                course_diff(course, matching_course)
+            else
+                println("Something weird here, we have more than one match")
         end
     end
 end
