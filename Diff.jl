@@ -14,7 +14,9 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum)
     # compare CIP
     curriculum1.CIP == curriculum2.CIP ? println("Curriculum 1 and Curriculum 2 have the same CIP: $(curriculum1.CIP)") : println("Curriculum 1 has CIP $(curriculum1.CIP) and Curriculum 2 has CIP $(curriculum2.CIP)")
     # compare num_courses
+    curriculum1.num_courses == curriculum2.num_courses ? println("Curriculum 1 and 2 have the same number of courses: $(curriculum1.num_courses)") : println("Curriculum 1 has number of courses $(curriculum1.num_courses) and Curriculum 2 has number of courses $(curriculum2.num_courses)")
     # compare credit_hours
+    curriculum1.credit_hours == curriculum2.credit_hours ? println("Curriculum 1 and 2 have the same number of credit hours: $(curriculum1.credit_hours)") : println("Curriculum 1 has number of credit hours $(curriculum1.credit_hours) and Curriculum 2 has number of credit hourse $(curriculum2.credit_hours)")
     # compare metrics
 
     # for each course in curriculum 1, try to find a similarly named course in curriculum 2
