@@ -3,3 +3,4 @@ Todo:
 - [ ] Verbose option
 - [ ] Explain the differences in complexity and centrality (and thereby blocking and delay factors)
 - [ ] use fieldnames instead of naming each field manually.
+- [ ] expand to degree plans
