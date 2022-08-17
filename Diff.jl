@@ -50,6 +50,9 @@ function blocking_factor_investigator(course_me::Course, curriculum::Curriculum)
     unblocked_field
 end
 
+function delay_factor_investigator(course_me::Course, curriculum::Curriculum)
+
+end
 
 # main functions
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
