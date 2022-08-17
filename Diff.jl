@@ -1,6 +1,6 @@
 using CurricularAnalytics
 
-function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool)
+function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
     # compare:
     # name
     if (course1.name == course2.name)
@@ -138,7 +138,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
 
 end
 
-function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool)
+function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
 
     # do the basic comparisons like name, BA/BS etc
     # compare names
