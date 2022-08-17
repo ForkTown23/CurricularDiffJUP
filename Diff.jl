@@ -1,5 +1,46 @@
 using CurricularAnalytics
 
+function courses_that_depend_on_me(course_me::Course, curriculum::Curriculum)
+    # me is the course
+    courses_that_depend_on_me = []
+    # look through all courses in curriculum. if one of them lists me as a prereq, add them to the list
+    for course in curriculum.courses
+        # look through the courses prerequisite
+        for (key, value) in course.requisites
+            # the key is what matters, it is the id of the course in the curriculum
+            if (value == pre && key == course_me.id) # let's skip co-reqs for now... interesting to see if this matters later
+
+                push!(courses_that_depend_on_me, course)
+            end
+        end
+    end
+
+    courses_that_depend_on_me
+end
+
+function blocking_factor_investigator(course_me::Course, curriculum::Curriculum)
+    # this should:
+    # check all courses to make a list of courses that consider this one a prereq
+    # then for each of those find which courses deem that course a prereq
+    # repeat until the list of courses that consider a given course a prereq is empty.
+    unblocked_field = courses_that_depend_on_me(course_me, curriculum)
+    if (length(unblocked_field) != 0)
+        # if theres courses that depend on my current course, find the immediately unblocked field of each of those courses
+        # and add it to courses_that_depend_on_me
+        for course_A in unblocked_field
+            courses_that_depend_on_course_A = courses_that_depend_on_me(course_A, curriculum)
+            if (length(courses_that_depend_on_course_A) != 0)
+                for course in courses_that_depend_on_course_A
+                    if (!(course in unblocked_field)) # avoid duplicates
+                        push!(unblocked_field, course)
+                    end
+                end
+            end
+        end
+    end
+    unblocked_field
+end
+
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
     # compare:
     # name
