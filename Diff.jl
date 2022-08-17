@@ -139,6 +139,30 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
+        # since they have different blocking factors, investigate why and get a set of blocking factors
+        unblocked_field_course_1 = Set(blocking_factor_investigator(course1, curriculum1))
+        unblocked_field_course_2 = Set(blocking_factor_investigator(course2, curriculum2))
+        # use setdiff to track which courses aren't in course 2's unblocked field and which aren't in course 1's unblocked field
+        not_in_c2_unbl_field = setdiff(unblocked_field_course_1, unblocked_field_course_2)
+        not_in_c1_unbl_field = setdiff(unblocked_field_course_2, unblocked_field_course_1)
+        if (length(not_in_c2_unbl_field) != 0)
+            # there are courses in c1's unblocked that aren't in course2s
+            println("the following courses aren't in course 2's unblocked field:")
+            for course in not_in_c2_unbl_field
+                println("$(course.name)")
+            end
+        else
+            println("every course in course 1's unblocked field is in course 2's unblocked field")
+        end
+        if (length(not_in_c1_unbl_field) != 0)
+            # there are courses in c2's unblocked that aren't in course1s
+            println("the following courses aren't in course 1's unblocked field:")
+            for course in not_in_c1_unbl_field
+                println("$(course.name)")
+            end
+        else
+            println("every course in course 2's unblocked field is in course 1's unblocked field")
+        end
     end
     # delay factor
     if (course1.metrics["delay factor"] == course2.metrics["delay factor"])
