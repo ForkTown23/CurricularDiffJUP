@@ -1,5 +1,13 @@
 using CurricularAnalytics
 
+function courses_to_course_names(courses::Array{Course})
+    course_names = []
+    for course in courses
+        push!(course_names, course.name)
+    end
+    course_names
+end
+
 function courses_that_depend_on_me(course_me::Course, curriculum::Curriculum)
     # me is the course
     courses_that_depend_on_me = []
