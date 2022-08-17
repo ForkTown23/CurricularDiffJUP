@@ -1,6 +1,6 @@
 using CurricularAnalytics
 
-function courses_to_course_names(courses::Array{Course})
+function courses_to_course_names(courses::Vector{Course})
     course_names = []
     for course in courses
         push!(course_names, course.name)
@@ -10,7 +10,7 @@ end
 
 function courses_that_depend_on_me(course_me::Course, curriculum::Curriculum)
     # me is the course
-    courses_that_depend_on_me = []
+    courses_that_depend_on_me = Course[]
     # look through all courses in curriculum. if one of them lists me as a prereq, add them to the list
     for course in curriculum.courses
         # look through the courses prerequisite
@@ -148,8 +148,8 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     else
         println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
         # since they have different blocking factors, investigate why and get a set of blocking factors
-        unblocked_field_course_1 = Set(blocking_factor_investigator(course1, curriculum1))
-        unblocked_field_course_2 = Set(blocking_factor_investigator(course2, curriculum2))
+        unblocked_field_course_1 = Set(courses_to_course_names(blocking_factor_investigator(course1, curriculum1)))
+        unblocked_field_course_2 = Set(courses_to_course_names(blocking_factor_investigator(course2, curriculum2)))
         # use setdiff to track which courses aren't in course 2's unblocked field and which aren't in course 1's unblocked field
         not_in_c2_unbl_field = setdiff(unblocked_field_course_1, unblocked_field_course_2)
         not_in_c1_unbl_field = setdiff(unblocked_field_course_2, unblocked_field_course_1)
@@ -157,7 +157,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             # there are courses in c1's unblocked that aren't in course2s
             println("the following courses aren't in course 2's unblocked field:")
             for course in not_in_c2_unbl_field
-                println("$(course.name)")
+                println("$(course)")
             end
         else
             println("every course in course 1's unblocked field is in course 2's unblocked field")
@@ -166,7 +166,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             # there are courses in c2's unblocked that aren't in course1s
             println("the following courses aren't in course 1's unblocked field:")
             for course in not_in_c1_unbl_field
-                println("$(course.name)")
+                println("$(course)")
             end
         else
             println("every course in course 2's unblocked field is in course 1's unblocked field")
