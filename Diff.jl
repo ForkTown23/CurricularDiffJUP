@@ -3,43 +3,107 @@ using CurricularAnalytics
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool)
     # compare:
     # name
-    course1.name == course2.name ? println("✅Course 1 and Course 2 have the same name: $(course1.name)") : println("❌Course 1 has name $(course1.name) and Course 2 has name $(course2.name)")
+    if (course1.name == course2.name)
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same name: $(course1.name)")
+        end
+    else
+        println("❌Course 1 has name $(course1.name) and Course 2 has name $(course2.name)")
+    end
+
     # credit_hours
-    course1.credit_hours == course2.credit_hours ? println("✅Course 1 and Course 2 have the same credit_hours: $(course1.credit_hours)") : println("❌Course 1 has credit_hours $(course1.credit_hours) and Course 2 has credit_hours $(course2.credit_hours)")
+    if (course1.credit_hours == course2.credit_hours)
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same credit_hours: $(course1.credit_hours)")
+        end
+    else
+        println("❌Course 1 has credit_hours $(course1.credit_hours) and Course 2 has credit_hours $(course2.credit_hours)")
+    end
+
     # prefix
-    course1.prefix == course2.prefix ? println("✅Course 1 and Course 2 have the same prefix: $(course1.prefix)") : println("❌Course 1 has prefix $(course1.prefix) and Course 2 has prefix $(course2.prefix)")
+    if (course1.prefix == course2.prefix)
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same prefix: $(course1.prefix)")
+        end
+    else
+        println("❌Course 1 has prefix $(course1.prefix) and Course 2 has prefix $(course2.prefix)")
+    end
+
     # num
-    course1.num == course2.num ? println("✅Course 1 and Course 2 have the same num: $(course1.num)") : println("❌Course 1 has num $(course1.num) and Course 2 has num $(course2.num)")
+    if (course1.num == course2.num)
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same num: $(course1.num)")
+        end
+    else
+        println("❌Course 1 has num $(course1.num) and Course 2 has num $(course2.num)")
+    end
+
     # institution
-    course1.institution == course2.institution ? println("✅Course 1 and Course 2 have the same institution: $(course1.institution)") : println("❌Course 1 has institution $(course1.institution) and Course 2 has institution $(course2.institution)")
+    if (course1.institution == course2.institution)
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same institution: $(course1.institution)")
+        end
+    else
+        println("❌Course 1 has institution $(course1.institution) and Course 2 has institution $(course2.institution)")
+    end
+
     # college
-    course1.college == course2.college ? println("✅Course 1 and Course 2 have the same college: $(course1.college)") : println("❌Course 1 has college $(course1.college) and Course 2 has college $(course2.college)")
+    if (course1.college == course2.college)
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same college: $(course1.college)")
+        end
+    else
+        println("❌Course 1 has college $(course1.college) and Course 2 has college $(course2.college)")
+    end
+
     # department
-    course1.department == course2.department ? println("✅Course 1 and Course 2 have the same department: $(course1.department)") : println("❌Course 1 has department $(course1.department) and Course 2 has department $(course2.department)")
+    if (course1.department == course2.department)
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same department: $(course1.department)")
+        end
+    else
+        println("❌Course 1 has department $(course1.department) and Course 2 has department $(course2.department)")
+    end
+
     # canonical_name
-    course1.canonical_name == course2.canonical_name ? println("✅Course 1 and Course 2 have the same canonical_name: $(course1.canonical_name)") : println("❌Course 1 has canonical_name $(course1.canonical_name) and Course 2 has canonical_name $(course2.canonical_name)")
-    # metrics
+    if (course1.canonical_name == course2.canonical_name)
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same canonical_name: $(course1.canonical_name)")
+        end
+    else
+        println("❌Course 1 has canonical_name $(course1.canonical_name) and Course 2 has canonical_name $(course2.canonical_name)")
+    end
+
+    # METRICS
     # complexity
     if (course1.metrics["complexity"] == course2.metrics["complexity"])
-        println("✅Course 1 and Course 2 have the same complexity: $(course1.metrics["complexity"])")
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same complexity: $(course1.metrics["complexity"])")
+        end
     else
         println("❌Course 1 has complexity $(course1.metrics["complexity"]) and Course 2 has complexity $(course2.metrics["complexity"])")
     end
     # centrality
     if (course1.metrics["centrality"] == course2.metrics["centrality"])
-        println("✅Course 1 and Course 2 have the same centrality: $(course1.metrics["centrality"])")
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same centrality: $(course1.metrics["centrality"])")
+        end
     else
         println("❌Course 1 has centrality $(course1.metrics["centrality"]) and Course 2 has centrality $(course2.metrics["centrality"])")
     end
     # blocking factor
     if (course1.metrics["blocking factor"] == course2.metrics["blocking factor"])
-        println("✅Course 1 and Course 2 have the same blocking factor: $(course1.metrics["blocking factor"])")
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same blocking factor: $(course1.metrics["blocking factor"])")
+        end
     else
         println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
     end
     # delay factor
     if (course1.metrics["delay factor"] == course2.metrics["delay factor"])
-        println("✅Course 1 and Course 2 have the same delay factor: $(course1.metrics["delay factor"])")
+        if (verbose)
+            println("✅Course 1 and Course 2 have the same delay factor: $(course1.metrics["delay factor"])")
+        end
     else
         println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
     end
