@@ -1,5 +1,6 @@
 using CurricularAnalytics
 
+# helper functions
 function courses_to_course_names(courses::Vector{Course})
     course_names = []
     for course in courses
@@ -49,6 +50,8 @@ function blocking_factor_investigator(course_me::Course, curriculum::Curriculum)
     unblocked_field
 end
 
+
+# main functions
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
     # compare:
     # name
