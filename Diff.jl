@@ -1,8 +1,15 @@
 using CurricularAnalytics
 
 # helper functions
+function pretty_print_course_names(courses::Vector{AbstractString})
+    for course in courses
+        print("$(course)➡️")
+    end
+    println(" ")
+end
+
 function courses_to_course_names(courses::Vector{Course})
-    course_names = []
+    course_names = AbstractString[]
     for course in courses
         push!(course_names, course.name)
     end
@@ -54,7 +61,7 @@ function delay_factor_investigator(course_me::Course, curriculum::Curriculum)
     # this is harder because we need to find the longest path
     # for each course in my unblocked field, calculate the longest path from a sink up to them that includes me
     my_unblocked_field = blocking_factor_investigator(course_me, curriculum)
-    delay_factor_path = []
+    delay_factor_path = Course[]
     # if my unblocked field is empty, find the longest path to me
     if (length(my_unblocked_field) == 0)
         # call longest path to me with no filter
@@ -125,6 +132,7 @@ function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_co
     push!(longest_path_to_course_me, course_me)
     longest_path_to_course_me
 end
+
 # main functions
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
     # compare:
@@ -256,6 +264,12 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
+        df_path_course_1 = courses_to_course_names(delay_factor_investigator(course1, curriculum1))
+        df_path_course_2 = courses_to_course_names(delay_factor_investigator(course2, curriculum2))
+        print("Course 1's delay factor path:")
+        pretty_print_course_names(df_path_course_1)
+        print("Course 2's delay factor path:")
+        pretty_print_course_names(df_path_course_2)
     end
     # requisites
     # collate all the prerequisite names from course 1
