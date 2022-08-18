@@ -51,9 +51,46 @@ function blocking_factor_investigator(course_me::Course, curriculum::Curriculum)
 end
 
 function delay_factor_investigator(course_me::Course, curriculum::Curriculum)
+    # this is harder because we need to find the longest path
+    # for each course in my unblocked field, calculate the longest path from a sink up to them that includes me
 
 end
 
+function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_course::Course, filter::Bool=false)
+    # for each prereq of mine find the longest path up to that course
+    longest_path_to_course_me = Course[]
+    longest_paths_to_me = []
+    for (key, value) in course_me.requisites
+        if (value == pre) # reconsider if coreqs count here *shrug*
+            longest_path_to_prereq = longest_path_to_me(curriculum.courses[key], curriculum, filter_course, filter)
+            push!(longest_paths_to_me, longest_path_to_prereq)
+        end
+    end
+    # compare the lengths, filter by the ones that contain the filter course if needed
+    if (filter)
+        # choose the longest path length that contains filter course
+        length_of_longest_path = 0
+        for array in longest_paths_to_me
+            if (length(array) > length_of_longest_path && filter_course in array)
+                longest_path_to_course_me = array
+                length_of_longest_path = length(array)
+            end
+        end
+    else
+        # choose the longest path
+        length_of_longest_path = 0
+        for array in longest_paths_to_me
+            if (length(array) > length_of_longest_path)
+                longest_path_to_course_me = array
+                length_of_longest_path = length(array)
+            end
+        end
+    end
+
+    # add myself to the chosen longest path and return that
+    push!(longest_path_to_course_me, course_me)
+    longest_path_to_course_me
+end
 # main functions
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
     # compare:
