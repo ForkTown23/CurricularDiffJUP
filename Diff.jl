@@ -53,7 +53,41 @@ end
 function delay_factor_investigator(course_me::Course, curriculum::Curriculum)
     # this is harder because we need to find the longest path
     # for each course in my unblocked field, calculate the longest path from a sink up to them that includes me
+    my_unblocked_field = blocking_factor_investigator(course_me, curriculum)
+    delay_factor_path = []
+    # if my unblocked field is empty, find the longest path to me
+    if (length(my_unblocked_field) == 0)
+        # call longest path to me with no filter
+        delay_factor_path = longest_path_to_me(course_me, curriculum, course_me, false)
+    else
+        # select only the sink nodes of my unblocked field. this is bad for time complexity, though
+        sinks_in_my_u_field = filter((x) -> length(courses_that_depend_on_me(x, curriculum)) == 0, my_unblocked_field)
 
+        # for each of the sinks, calculate longest path to them, that passes through me
+        longest_path_through_me = []
+        longest_length_through_me = 0
+        for sink in sinks_in_my_u_field
+            # NOTE: this will unfortunately produce the longest path stemming from me, not the whole path. *shrug for now*
+            path = longest_path_to_me(sink, curriculum, course_me, true)
+            if (length(path) > longest_length_through_me)
+                longest_length_through_me = length(path)
+                longest_path_through_me = path
+            end
+        end
+
+        # now that you have the longest path stemming from me,
+        # find the longest path to me and put em together. They will unfortunately include me twice, so make sure to remove me from one of them
+        longest_up_to_me = longest_path_to_me(course_me, curriculum, course_me, false)
+        pop!(longest_up_to_me)
+        for course in longest_up_to_me
+            push!(delay_factor_path, course)
+        end
+        for course in longest_path_through_me
+            push!(delay_factor_path, course)
+        end
+    end
+
+    delay_factor_path
 end
 
 function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_course::Course, filter::Bool=false)
