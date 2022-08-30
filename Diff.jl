@@ -361,7 +361,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
         field2 = getfield(curriculum2, field)
         if (field1 == field2)
             if (verbose)
-                println("✅Curriculum 1 and Curriculum 2 have the same name: $field1")
+                println("✅Curriculum 1 and Curriculum 2 have the same $field: $field1")
             end
         else
             println("❌Curriculum 1 has $(field): $field1 and Curriculum 2 has $(field): $field2")
@@ -369,6 +369,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
     end
 
     println("BREAK")
+    # TODO: remove this and update 
     # do the basic comparisons like name, BA/BS etc
     # compare names
     if (curriculum1.name == curriculum2.name)
