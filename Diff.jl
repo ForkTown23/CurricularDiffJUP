@@ -369,7 +369,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
     end
 
     println("BREAK")
-    # TODO: remove this and update 
+    # TODO: remove this and update the metrics from
     # do the basic comparisons like name, BA/BS etc
     # compare names
     if (curriculum1.name == curriculum2.name)
