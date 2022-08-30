@@ -1,6 +1,26 @@
 using CurricularAnalytics
 
 # helper functions
+function prereq_print(prereqs::Set{AbstractString})
+    string = " "
+    for prereq in prereqs
+        string = string * prereq
+        string = string * " "
+    end
+    string
+end
+
+function get_course_prereqs(curriculum::Curriculum, course::Course)
+    # get all the prereqs
+    course_prereqs = Vector{Course}()
+    for (key, value) in course.requisites
+        # get the course name
+        course = curriculum.courses[key]
+        push!(course_prereqs, course)
+    end
+    course_prereqs
+end
+
 function course_from_name(curriculum::Curriculum, course_name::AbstractString)
     for c in curriculum.courses
         if c.name == course_name
@@ -252,10 +272,19 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             # there are courses in c1's unblocked that aren't in course2s
             println("the following courses aren't in course 2's unblocked field:")
             # TODO: FIND THE COURSES HERE THAT HAVE CHANGED THEIR PREREQS
-            for course in not_in_c2_unbl_field
-                # find course to match name in curriculum1
-
-                println("$(course)")
+            for course_name in not_in_c2_unbl_field
+                # find course to match name in curriculum1 and curriculum2
+                course_in_curr1 = course_from_name(curriculum1, course_name)
+                course_in_curr2 = course_from_name(curriculum2, course_name)
+                # find their prerequisites
+                prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, course_in_curr1)))
+                prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, course_in_curr2)))
+                # compare the prerequisites
+                # lost prereqs are those that from c1 to c2 got dropped
+                # gained prerqs are those that from c1 to c2 got added
+                lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
+                gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+                println("$(course_name), lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
             end
         else
             println("every course in course 1's unblocked field is in course 2's unblocked field")
@@ -264,8 +293,17 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             # there are courses in c2's unblocked that aren't in course1s
             println("the following courses aren't in course 1's unblocked field:")
             # TODO: FIND THE COURSES HERE THAT HAVE CHANGED THEIR PREREQS
-            for course in not_in_c1_unbl_field
-                println("$(course)")
+            for course_name in not_in_c1_unbl_field
+                # find course to match name in curriculum1 and curriculum2
+                course_in_curr1 = course_from_name(curriculum1, course_name)
+                course_in_curr2 = course_from_name(curriculum2, course_name)
+                # find their prerequisites
+                prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, course_in_curr1)))
+                prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, course_in_curr2)))
+                # compare the prerequisites
+                lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
+                gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+                println("$(course_name), lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
             end
         else
             println("every course in course 2's unblocked field is in course 1's unblocked field")
@@ -287,19 +325,9 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     end
     # requisites
     # collate all the prerequisite names from course 1
-    course1_prereqs = Set()
-    for (key, value) in course1.requisites
-        # get the course name
-        course_name = curriculum1.courses[key].name
-        push!(course1_prereqs, course_name)
-    end
+    course1_prereqs = Set(courses_to_course_names(get_course_prereqs(curriculum1, course1)))
 
-    course2_prereqs = Set()
-    for (key, value) in course2.requisites
-        # get the course name
-        course_name = curriculum2.courses[key].name
-        push!(course2_prereqs, course_name)
-    end
+    course2_prereqs = Set(courses_to_course_names(get_course_prereqs(curriculum2, course2)))
 
     println("The sets of prerequisites being equal is $(issetequal(course1_prereqs, course2_prereqs))")
     if (!issetequal(course1_prereqs, course2_prereqs))
