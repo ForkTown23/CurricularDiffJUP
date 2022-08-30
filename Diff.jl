@@ -345,7 +345,30 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
 end
 
 function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
+    # using fieldnames instead of explicit names
+    relevant_fields = filter(x ->
+            x != :courses &&
+                x != :graph &&
+                x != :learning_outcomes &&
+                x != :learning_outcome_graph &&
+                x != :course_learning_outcome_graph &&
+                x != :metrics &&
+                x != :metadata,
+        fieldnames(Curriculum))
 
+    for field in relevant_fields
+        field1 = getfield(curriculum1, field)
+        field2 = getfield(curriculum2, field)
+        if (field1 == field2)
+            if (verbose)
+                println("✅Curriculum 1 and Curriculum 2 have the same name: $field1")
+            end
+        else
+            println("❌Curriculum 1 has $(field): $field1 and Curriculum 2 has $(field): $field2")
+        end
+    end
+
+    println("BREAK")
     # do the basic comparisons like name, BA/BS etc
     # compare names
     if (curriculum1.name == curriculum2.name)
