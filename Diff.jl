@@ -284,7 +284,21 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
                 # gained prerqs are those that from c1 to c2 got added
                 lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
                 gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
-                println("$(course_name), lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
+
+                # check if the prereqs haven't changed. If they haven't changed, we need to find which of their prereqs did
+                if (length(lost_prereqs) == 0 && length(gained_prereqs) == 0)
+                    # find this course's prereqs and match them with any other courses in not_in_c2_unbl_field
+                    # find this course's prereqs in curriculum 1
+                    prereqs_in_curr1_set = Set(prereqs_in_curr1)
+                    # cross reference with the list of courses not in not_in_c2_unbl_field
+                    not_in_c2_unbl_field_set = Set(not_in_c2_unbl_field)
+
+                    in_both = intersect(prereqs_in_curr1_set, not_in_c2_unbl_field_set)
+
+                    println("$(course_name)'s prerequisites have not changed, but it depends on $(prereq_print(in_both)), which might have changed")
+                else
+                    println("$(course_name), lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
+                end
             end
         else
             println("every course in course 1's unblocked field is in course 2's unblocked field")
@@ -303,7 +317,21 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
                 # compare the prerequisites
                 lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
                 gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
-                println("$(course_name), lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
+
+                # check if the prereqs haven't changed. If they haven't changed, we need to find which of their prereqs did
+                if (length(lost_prereqs) == 0 && length(gained_prereqs) == 0)
+                    # find this course's prereqs and match them with any other courses in not_in_c1_unbl_field
+                    # find this course's prereqs in curriculum 2
+                    prereqs_in_curr2_set = Set(prereqs_in_curr2)
+                    # cross reference with the list of courses not in not_in_c1_unbl_field
+                    not_in_c1_unbl_field_set = Set(not_in_c1_unbl_field)
+
+                    in_both = intersect(prereqs_in_curr2_set, not_in_c1_unbl_field_set)
+
+                    println("$(course_name)'s prerequisites have not changed, but it depends on $(prereq_print(in_both)), which might have changed")
+                else
+                    println("$(course_name), lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
+                end
             end
         else
             println("every course in course 2's unblocked field is in course 1's unblocked field")
