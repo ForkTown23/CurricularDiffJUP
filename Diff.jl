@@ -162,7 +162,7 @@ function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_co
 end
 
 # main functions
-function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, runningtally::Vector{Int}, verbose::Bool=true)
+function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, runningtally::Vector{Float64}, verbose::Bool=true)
     relevant_fields = filter(x ->
             x != :vertex_id &&
                 x != :cross_listed &&
@@ -193,6 +193,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has complexity $(course1.metrics["complexity"]) and Course 2 has complexity $(course2.metrics["complexity"])")
+        runningtally[1] += (course2.metrics["complexity"] - course1.metrics["complexity"])
     end
     # centrality
     if (course1.metrics["centrality"] == course2.metrics["centrality"])
@@ -201,6 +202,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has centrality $(course1.metrics["centrality"]) and Course 2 has centrality $(course2.metrics["centrality"])")
+        runningtally[2] += (course2.metrics["centrality"] - course1.metrics["centrality"])
     end
     # blocking factor
     if (course1.metrics["blocking factor"] == course2.metrics["blocking factor"])
@@ -209,6 +211,8 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
+        runningtally[3] += (course2.metrics["blocking factor"] - course1.metrics["blocking factor"])
+
         # since they have different blocking factors, investigate why and get a set of blocking factors
         unblocked_field_course_1 = blocking_factor_investigator(course1, curriculum1)
         unblocked_field_course_2 = blocking_factor_investigator(course2, curriculum2)
@@ -293,6 +297,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
+        runningtally[4] += (course2.metrics["delay factor"] - course1.metrics["delay factor"])
         df_path_course_1 = courses_to_course_names(delay_factor_investigator(course1, curriculum1))
         df_path_course_2 = courses_to_course_names(delay_factor_investigator(course2, curriculum2))
         print("Course 1's delay factor path:")
@@ -318,6 +323,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     end
 
+    runningtally
 
 end
 
@@ -434,7 +440,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             curriculum2.metrics["delay factor"][1] == curriculum1.metrics["delay factor"][1],
         ]
 
-        explained = [0, 0, 0, 0]
+        explained = [0.0, 0.0, 0.0, 0.0]
         # for each course in curriculum 1, try to find a similarly named course in curriculum 2
         for course in curriculum1.courses
             # this is the catch: MATH 20A and MATH 20A or 10A are not going to match
@@ -445,6 +451,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
                 explained = course_diff(course, course2, curriculum1, curriculum2, explained, verbose)
+                println("explained so far: $(explained[1]), $(explained[2]), $(explained[3]), $(explained[4])")
             else
                 println("Something weird here, we have more than one match")
             end
