@@ -130,10 +130,10 @@ function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_co
     longest_path_to_course_me = Course[]
     longest_paths_to_me = []
     for (key, value) in course_me.requisites
-        if (value == pre) # reconsider if coreqs count here *shrug*
-            longest_path_to_prereq = longest_path_to_me(curriculum.courses[key], curriculum, filter_course, filter)
-            push!(longest_paths_to_me, longest_path_to_prereq)
-        end
+        #if (value == pre) # reconsider if coreqs count here *shrug*
+        longest_path_to_prereq = longest_path_to_me(curriculum.courses[key], curriculum, filter_course, filter)
+        push!(longest_paths_to_me, longest_path_to_prereq)
+        #end
     end
     # compare the lengths, filter by the ones that contain the filter course if needed
     if (filter)
