@@ -163,77 +163,26 @@ end
 
 # main functions
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
-    # compare:
-    # name
-    if (course1.name == course2.name)
-        if (verbose)
-            println("✅Course 1 and Course 2 have the same name: $(course1.name)")
-        end
-    else
-        println("❌Course 1 has name $(course1.name) and Course 2 has name $(course2.name)")
-    end
+    relevant_fields = filter(x ->
+            x != :vertex_id &&
+                x != :cross_listed &&
+                x != :requisites &&
+                x != :learning_outcomes &&
+                x != :metrics &&
+                x != :passrate &&
+                x != :metadata,
+        fieldnames(Course))
 
-    # credit_hours
-    if (course1.credit_hours == course2.credit_hours)
-        if (verbose)
-            println("✅Course 1 and Course 2 have the same credit_hours: $(course1.credit_hours)")
+    for field in relevant_fields
+        field1 = getfield(course1, field)
+        field2 = getfield(course2, field)
+        if (field1 == field2)
+            if (verbose)
+                println("✅Course 1 and Course 2 have the same $field: $field1")
+            end
+        else
+            println("❌Course 1 has $(field): $field1 and Course 2 has $(field): $field2")
         end
-    else
-        println("❌Course 1 has credit_hours $(course1.credit_hours) and Course 2 has credit_hours $(course2.credit_hours)")
-    end
-
-    # prefix
-    if (course1.prefix == course2.prefix)
-        if (verbose)
-            println("✅Course 1 and Course 2 have the same prefix: $(course1.prefix)")
-        end
-    else
-        println("❌Course 1 has prefix $(course1.prefix) and Course 2 has prefix $(course2.prefix)")
-    end
-
-    # num
-    if (course1.num == course2.num)
-        if (verbose)
-            println("✅Course 1 and Course 2 have the same num: $(course1.num)")
-        end
-    else
-        println("❌Course 1 has num $(course1.num) and Course 2 has num $(course2.num)")
-    end
-
-    # institution
-    if (course1.institution == course2.institution)
-        if (verbose)
-            println("✅Course 1 and Course 2 have the same institution: $(course1.institution)")
-        end
-    else
-        println("❌Course 1 has institution $(course1.institution) and Course 2 has institution $(course2.institution)")
-    end
-
-    # college
-    if (course1.college == course2.college)
-        if (verbose)
-            println("✅Course 1 and Course 2 have the same college: $(course1.college)")
-        end
-    else
-        println("❌Course 1 has college $(course1.college) and Course 2 has college $(course2.college)")
-    end
-
-    # department
-    if (course1.department == course2.department)
-        if (verbose)
-            println("✅Course 1 and Course 2 have the same department: $(course1.department)")
-        end
-    else
-        println("❌Course 1 has department $(course1.department) and Course 2 has department $(course2.department)")
-    end
-
-    # canonical_name
-    if (course1.canonical_name == course2.canonical_name)
-        if (verbose)
-            println("✅Course 1 and Course 2 have the same canonical_name: $(course1.canonical_name)")
-        end
-    else
-        println("❌Course 1 has canonical_name $(course1.canonical_name) and Course 2 has canonical_name $(course2.canonical_name)")
     end
 
     # METRICS
