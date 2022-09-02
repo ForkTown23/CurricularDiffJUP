@@ -162,7 +162,7 @@ function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_co
 end
 
 # main functions
-function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
+function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, runningtally::Vector{Int}, verbose::Bool=true)
     relevant_fields = filter(x ->
             x != :vertex_id &&
                 x != :cross_listed &&
@@ -427,6 +427,14 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
     # if the stats don't match up or we asked for a deep dive, take a deep dive!
     if (!metrics_same || verbose)
         println("Taking a look at courses")
+        # make the initial changes array, i.e. what we're trying to explain
+        explain = [curriculum2.metrics["complexity"][1] - curriculum1.metrics["complexity"][1],
+            curriculum2.metrics["centrality"][1] == curriculum1.metrics["centrality"][1],
+            curriculum2.metrics["blocking factor"][1] == curriculum1.metrics["blocking factor"][1],
+            curriculum2.metrics["delay factor"][1] == curriculum1.metrics["delay factor"][1],
+        ]
+
+        explained = [0, 0, 0, 0]
         # for each course in curriculum 1, try to find a similarly named course in curriculum 2
         for course in curriculum1.courses
             # this is the catch: MATH 20A and MATH 20A or 10A are not going to match
@@ -436,7 +444,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             elseif (length(matching_course) == 1)
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
-                course_diff(course, course2, curriculum1, curriculum2, verbose)
+                course_diff(course, course2, curriculum1, curriculum2, explained, verbose)
             else
                 println("Something weird here, we have more than one match")
             end
