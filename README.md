@@ -13,7 +13,9 @@ Todo:
 - [ ] expand to degree plans
 - [x] check if co-reqs matters in blocking factor investigator fn. THEY DO!
 - [ ] consider refactoring blocking_factor_investigator into being recursive
+- [ ] consider the cases where changes balance out (is it even important to us?)
 
 9/2/22:
 - [x] Add the case where a prereq set hasnt changed but a course has disappeared from the u-field because it is reached through a course that *has* changed its prereqs
-- [ ] Change course_diff to use field names
+- [x] Change course_diff to use field names
+- [ ] Running Tally of Score differences, from curr1 to curr2
