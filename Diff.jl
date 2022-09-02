@@ -125,6 +125,27 @@ function delay_factor_investigator(course_me::Course, curriculum::Curriculum)
     delay_factor_path
 end
 
+function centrality_investigator(course_me::Course, curriculum::Curriculum)
+    # this will return the paths that make up the centrality of a course
+    g = curriculum.graph
+    course = course_me.vertex_id[curriculum.id]
+    centrality_paths = []
+    for path in all_paths(g)
+        # stole the conditions from the CurricularAnalytics.jl repo
+        if (in(course, path) && length(path) > 2 && path[1] != course && path[end] != course)
+            # convert this path to courses
+            course_path = []
+            for id in path
+                push!(curriculum.courses[id], course_path)
+            end
+
+            # then add this path to the collection of paths
+            push!(course_path, centrality_paths)
+        end
+    end
+    centrality_paths
+end
+
 function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_course::Course, filter::Bool=false)
     # for each prereq of mine find the longest path up to that course
     longest_path_to_course_me = Course[]
@@ -203,6 +224,20 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     else
         println("❌Course 1 has centrality $(course1.metrics["centrality"]) and Course 2 has centrality $(course2.metrics["centrality"])")
         runningtally[2] += (course2.metrics["centrality"] - course1.metrics["centrality"])
+
+        # run the investigator and then compare
+        centrality_c1 = centrality_investigator(course1, curriculum1)
+        centrality_c2 = centrality_investigator(course2, curriculum2)
+
+        # turn those into course names
+
+        # turn them into sets
+
+        # set diff
+
+        # analyse
+
+
     end
     # blocking factor
     if (course1.metrics["blocking factor"] == course2.metrics["blocking factor"])

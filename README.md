@@ -14,6 +14,7 @@ Todo:
 - [x] check if co-reqs matters in blocking factor investigator fn. THEY DO!
 - [ ] consider refactoring blocking_factor_investigator into being recursive
 - [ ] consider the cases where changes balance out (is it even important to us?)
+- [ ] consider swapping over to a return-based system rather than having each function print stuff
 
 9/2/22:
 - [x] Add the case where a prereq set hasnt changed but a course has disappeared from the u-field because it is reached through a course that *has* changed its prereqs
