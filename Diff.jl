@@ -444,7 +444,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             elseif (length(matching_course) == 1)
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
-                course_diff(course, course2, curriculum1, curriculum2, explained, verbose)
+                explained = course_diff(course, course2, curriculum1, curriculum2, explained, verbose)
             else
                 println("Something weird here, we have more than one match")
             end
