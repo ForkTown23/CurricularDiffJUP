@@ -246,7 +246,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
 
                     println("$(course_name)'s prerequisites have not changed, but it depends on $(prereq_print(in_both)), which might have changed")
                 else
-                    println("$(course_name), lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
+                    println("$(course_name): lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
                 end
             end
         else
@@ -279,7 +279,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
 
                     println("$(course_name)'s prerequisites have not changed, but it depends on $(prereq_print(in_both)), which might have changed")
                 else
-                    println("$(course_name), lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
+                    println("$(course_name): lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
                 end
             end
         else
