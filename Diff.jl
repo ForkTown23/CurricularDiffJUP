@@ -134,13 +134,13 @@ function centrality_investigator(course_me::Course, curriculum::Curriculum)
         # stole the conditions from the CurricularAnalytics.jl repo
         if (in(course, path) && length(path) > 2 && path[1] != course && path[end] != course)
             # convert this path to courses
-            course_path = []
+            course_path = Vector{Course}()
             for id in path
-                push!(curriculum.courses[id], course_path)
+                push!(course_path, curriculum.courses[id])
             end
 
             # then add this path to the collection of paths
-            push!(course_path, centrality_paths)
+            push!(centrality_paths, course_path)
         end
     end
     centrality_paths
@@ -230,12 +230,31 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         centrality_c2 = centrality_investigator(course2, curriculum2)
 
         # turn those into course names
-
-        # turn them into sets
-
+        # note that its an array of arrays so for each entry you have to convert to course names
+        centrality_c1_set = Set()
+        centrality_c2_set = Set()
+        for path in centrality_c1
+            path_names = courses_to_course_names(path)
+            push!(centrality_c1_set, path_names)
+        end
+        for path in centrality_c2
+            path_names = courses_to_course_names(path)
+            push!(centrality_c2_set, path_names)
+        end
         # set diff
+        not_in_c2 = setdiff(centrality_c1_set, centrality_c2_set)
+        not_in_c1 = setdiff(centrality_c2_set, centrality_c1_set)
 
         # analyse
+        println("The paths in course 1's centrality that aren't in course 2's are:")
+        for path in not_in_c2
+            pretty_print_course_names(path)
+        end
+
+        println("The paths in course 2's centrality that aren't in course 1's are:")
+        for path in not_in_c1
+            pretty_print_course_names(path)
+        end
 
 
     end
