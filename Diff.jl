@@ -256,6 +256,96 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             pretty_print_course_names(path)
         end
 
+        # TODO: consider explaining these differences, but they should be explainable by changes in the block and delay factors. 
+        # The only complication there is that these changes can be attributed to changes in the prereqs of those block and delay factors so theyre compounded. It's a lot harder
+        # Would have to go through all the members of those paths and check each of those for changes. Could be.
+
+        # To explain differences grab all the courses in the set of paths not in c2 
+        # check them against the matching courses in c2 looking for changes in prereqs
+        # grab all the courses in the set of paths not in c1 
+        # check them against the matching courses in c1 looking for changes in prereqs
+
+        println("checking courses in paths in curriculum 1 but not in curriculum 2")
+        # grab all the courses in the set of paths not in c2
+        all_courses_not_in_c2 = []
+        for path in not_in_c2
+            # this is a vector of AbstractString. look in each entry of that vector for course names
+            for course in path
+                if (!(course in all_courses_not_in_c2))
+                    push!(all_courses_not_in_c2, course)
+                end
+            end
+        end
+        # check them against matching courses in c2 looking for different prereqs
+        for course in all_courses_not_in_c2
+            c1 = course_from_name(curriculum1, course)
+            c2 = course_from_name(curriculum2, course)
+            # find their prerequisites
+            prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, c1)))
+            prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, c2)))
+            # compare the prerequisites
+            # lost prereqs are those that from c1 to c2 got dropped
+            # gained prerqs are those that from c1 to c2 got added
+            lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
+            gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+
+            if (length(lost_prereqs) == 0)
+                if (verbose)
+                    print("$(course) lost no prereqs")
+                end
+            else
+                println("$(course) lost these prereqs: $(prereq_print(lost_prereqs))")
+            end
+
+            if (length(gained_prereqs) == 0)
+                if (verbose)
+                    println("$(course) gained no prereqs")
+                end
+            else
+                println("$(course) gained these prereqs: : $(prereq_print(gained_prereqs))")
+            end
+        end
+
+        println("checking courses in paths in curriculum 2 but not in curriculum 1")
+        # grab all the courses in the set of paths not in c1
+        all_courses_not_in_c1 = []
+        for path in not_in_c1
+            # this is a vector of AbstractString. look in each entry of that vector for course names
+            for course in path
+                if (!(course in all_courses_not_in_c1))
+                    push!(all_courses_not_in_c1, course)
+                end
+            end
+        end
+        # check them against matching courses in c2 looking for different prereqs
+        for course in all_courses_not_in_c1
+            c1 = course_from_name(curriculum1, course)
+            c2 = course_from_name(curriculum2, course)
+            # find their prerequisites
+            prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, c1)))
+            prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, c2)))
+            # compare the prerequisites
+            # lost prereqs are those that from c1 to c2 got dropped
+            # gained prerqs are those that from c1 to c2 got added
+            lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
+            gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+
+            if (length(lost_prereqs) == 0)
+                if (verbose)
+                    print("$(course) lost no prereqs")
+                end
+            else
+                println("$(course) lost these prereqs: $(prereq_print(lost_prereqs))")
+            end
+
+            if (length(gained_prereqs) == 0)
+                if (verbose)
+                    println("$(course) gained no prereqs")
+                end
+            else
+                println("$(course) gained these prereqs: : $(prereq_print(gained_prereqs))")
+            end
+        end
 
     end
     # blocking factor
@@ -278,7 +368,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         if (length(not_in_c2_unbl_field) != 0)
             # there are courses in c1's unblocked that aren't in course2s
             println("the following courses aren't in course 2's unblocked field:")
-            # TODO: FIND THE COURSES HERE THAT HAVE CHANGED THEIR PREREQS
+            # FIND THE COURSES HERE THAT HAVE CHANGED THEIR PREREQS
             for course_name in not_in_c2_unbl_field
                 # find course to match name in curriculum1 and curriculum2
                 course_in_curr1 = course_from_name(curriculum1, course_name)
