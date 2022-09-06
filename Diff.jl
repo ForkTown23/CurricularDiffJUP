@@ -217,6 +217,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         runningtally[1] += (course2.metrics["complexity"] - course1.metrics["complexity"])
     end
     # centrality
+    explanations_centrality = Dict()
     if (course1.metrics["centrality"] == course2.metrics["centrality"])
         if (verbose)
             println("✅Course 1 and Course 2 have the same centrality: $(course1.metrics["centrality"])")
@@ -256,6 +257,11 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             pretty_print_course_names(path)
         end
 
+        explanations_centrality["paths not in c2"] = collect(not_in_c2)
+        explanations_centrality["paths not in c1"] = collect(not_in_c1)
+        explanations_centrality["courses not in c2 paths"] = Dict()
+        explanations_centrality["courses not in c1 paths"] = Dict()
+
         # TODO: consider explaining these differences, but they should be explainable by changes in the block and delay factors. 
         # The only complication there is that these changes can be attributed to changes in the prereqs of those block and delay factors so theyre compounded. It's a lot harder
         # Would have to go through all the members of those paths and check each of those for changes. Could be.
@@ -288,6 +294,10 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             # gained prerqs are those that from c1 to c2 got added
             lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
             gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+
+            explanations_centrality["courses not in c2 paths"][course] = Dict()
+            explanations_centrality["courses not in c2 paths"][course]["lost prereqs"] = lost_prereqs
+            explanations_centrality["courses not in c2 paths"][course]["gained prereqs"] = gained_prereqs
 
             if (length(lost_prereqs) == 0)
                 if (verbose)
@@ -330,6 +340,10 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
             gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
 
+            explanations_centrality["courses not in c1 paths"][course] = Dict()
+            explanations_centrality["courses not in c1 paths"][course]["lost prereqs"] = lost_prereqs
+            explanations_centrality["courses not in c1 paths"][course]["gained prereqs"] = gained_prereqs
+
             if (length(lost_prereqs) == 0)
                 if (verbose)
                     print("$(course) lost no prereqs")
@@ -348,6 +362,8 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
 
     end
+    # make Dict for return values
+    explanations_blockingfactor = Dict()
     # blocking factor
     if (course1.metrics["blocking factor"] == course2.metrics["blocking factor"])
         if (verbose)
@@ -365,11 +381,15 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         # use setdiff to track which courses aren't in course 2's unblocked field and which aren't in course 1's unblocked field
         not_in_c2_unbl_field = setdiff(unblocked_field_course_1_names, unblocked_field_course_2_names)
         not_in_c1_unbl_field = setdiff(unblocked_field_course_2_names, unblocked_field_course_1_names)
+
+        explanations_blockingfactor["length not in c2 ufield"] = length(not_in_c2_unbl_field)
+        explanations_blockingfactor["not in c2 ufield"] = Dict()
         if (length(not_in_c2_unbl_field) != 0)
             # there are courses in c1's unblocked that aren't in course2s
             println("the following courses aren't in course 2's unblocked field:")
             # FIND THE COURSES HERE THAT HAVE CHANGED THEIR PREREQS
             for course_name in not_in_c2_unbl_field
+                explanations_blockingfactor["not in c2 ufield"][course_name] = Dict()
                 # find course to match name in curriculum1 and curriculum2
                 course_in_curr1 = course_from_name(curriculum1, course_name)
                 course_in_curr2 = course_from_name(curriculum2, course_name)
@@ -381,6 +401,8 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
                 # gained prerqs are those that from c1 to c2 got added
                 lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
                 gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+                explanations_blockingfactor["not in c2 ufield"][course_name]["lost prereqs"] = lost_prereqs
+                explanations_blockingfactor["not in c2 ufield"][course_name]["gained prereqs"] = gained_prereqs
 
                 # check if the prereqs haven't changed. If they haven't changed, we need to find which of their prereqs did
                 if (length(lost_prereqs) == 0 && length(gained_prereqs) == 0)
@@ -393,18 +415,24 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
                     in_both = intersect(prereqs_in_curr1_set, not_in_c2_unbl_field_set)
 
                     println("$(course_name)'s prerequisites have not changed, but it depends on $(prereq_print(in_both)), which might have changed")
+                    explanations_blockingfactor["not in c2 ufield"][course_name]["in_both"] = collect(in_both)
+
                 else
                     println("$(course_name): lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
+                    explanations_blockingfactor["not in c2 ufield"][course_name]["in_both"] = []
                 end
             end
         else
             println("every course in course 1's unblocked field is in course 2's unblocked field")
         end
+        explanations_blockingfactor["length not in c1 ufield"] = length(not_in_c1_unbl_field)
+        explanations_blockingfactor["not in c1 ufield"] = Dict()
         if (length(not_in_c1_unbl_field) != 0)
             # there are courses in c2's unblocked that aren't in course1s
             println("the following courses aren't in course 1's unblocked field:")
             # TODO: FIND THE COURSES HERE THAT HAVE CHANGED THEIR PREREQS
             for course_name in not_in_c1_unbl_field
+                explanations_blockingfactor["not in c1 ufield"][course_name] = Dict()
                 # find course to match name in curriculum1 and curriculum2
                 course_in_curr1 = course_from_name(curriculum1, course_name)
                 course_in_curr2 = course_from_name(curriculum2, course_name)
@@ -415,6 +443,8 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
                 lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
                 gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
 
+                explanations_blockingfactor["not in c1 ufield"][course_name]["lost prereqs"] = lost_prereqs
+                explanations_blockingfactor["not in c1 ufield"][course_name]["gained prereqs"] = gained_prereqs
                 # check if the prereqs haven't changed. If they haven't changed, we need to find which of their prereqs did
                 if (length(lost_prereqs) == 0 && length(gained_prereqs) == 0)
                     # find this course's prereqs and match them with any other courses in not_in_c1_unbl_field
@@ -426,8 +456,10 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
                     in_both = intersect(prereqs_in_curr2_set, not_in_c1_unbl_field_set)
 
                     println("$(course_name)'s prerequisites have not changed, but it depends on $(prereq_print(in_both)), which might have changed")
+                    explanations_blockingfactor["not in c1 ufield"][course_name]["in_both"] = collect(in_both)
                 else
                     println("$(course_name): lost prereqs: $(prereq_print(lost_prereqs)), gained prereqs: $(prereq_print(gained_prereqs))")
+                    explanations_blockingfactor["not in c1 ufield"][course_name]["in_both"] = []
                 end
             end
         else
@@ -467,7 +499,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     end
 
-    runningtally
+    [runningtally, explanations_blockingfactor]
 
 end
 
@@ -595,6 +627,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
                 explained = course_diff(course, course2, curriculum1, curriculum2, explained, verbose)
+                explained = explained[1]
                 println("explained so far: $(explained[1]), $(explained[2]), $(explained[3]), $(explained[4])")
             else
                 println("Something weird here, we have more than one match")
