@@ -19,4 +19,4 @@ Todo:
 9/2/22:
 - [x] Add the case where a prereq set hasnt changed but a course has disappeared from the u-field because it is reached through a course that *has* changed its prereqs
 - [x] Change course_diff to use field names
-- [ ] Running Tally of Score differences, from curr1 to curr2
+- [x] Running Tally of Score differences, from curr1 to curr2
