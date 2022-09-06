@@ -25,4 +25,5 @@ Todo:
 - [x] Centrality investigative function
 - [x] Consider a refactor to use less course names and more courses to avoid converting back and forth
     It's not yet super feasible until I know more about the set diff thing. If i don't convert to course names, running set diff on sets of courses is going to turn up tons of differences because the course objects themselves are not the same.
-- [ ] Swap to return based system of dicts and arrays
+- [x] Swap to return based system of dicts and arrays
+- [ ] Delete all the previous prints
