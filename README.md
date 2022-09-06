@@ -22,5 +22,5 @@ Todo:
 - [x] Running Tally of Score differences, from curr1 to curr2
 
 9/6/22:
-- [ ] Centrality investigative function
-- [ ] Refactor to use less course names and more courses to avoid converting back and forth
+- [x] Centrality investigative function
+- [ ] Consider a refactor to use less course names and more courses to avoid converting back and forth
