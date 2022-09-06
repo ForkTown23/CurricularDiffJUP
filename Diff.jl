@@ -467,6 +467,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     end
     # delay factor
+    explanations_delayfactor = Dict()
     if (course1.metrics["delay factor"] == course2.metrics["delay factor"])
         if (verbose)
             println("✅Course 1 and Course 2 have the same delay factor: $(course1.metrics["delay factor"])")
@@ -481,12 +482,17 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         print("Course 2's delay factor path:")
         pretty_print_course_names(df_path_course_2)
 
-        # todo explain why
+        explanations_delayfactor["df path course 1"] = df_path_course_1
+        explanations_delayfactor["df path course 2"] = df_path_course_2
+        # explain why
         df_set_c1 = Set(df_path_course_1)
         df_set_c2 = Set(df_path_course_2)
 
         all_courses_in_paths = union(df_set_c1, df_set_c2)
+        explanations_delayfactor["courses involved"] = Dict()
+
         for course in all_courses_in_paths
+            explanations_delayfactor["courses involved"][course] = Dict()
             # find course to match name in curriculum1 and curriculum2
             course_in_curr1 = course_from_name(curriculum1, course)
             course_in_curr2 = course_from_name(curriculum2, course)
@@ -498,6 +504,8 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             # gained prerqs are those that from c1 to c2 got added
             lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
             gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+            explanations_delayfactor["courses involved"][course]["lost prereqs"] = lost_prereqs
+            explanations_delayfactor["courses involved"][course]["gained prereqs"] = gained_prereqs
             if (length(lost_prereqs) != 0 || length(gained_prereqs) != 0)
                 println("$(course) has had changes: lost $(prereq_print(lost_prereqs)) and gained $(prereq_print(gained_prereqs))")
             end
@@ -522,7 +530,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     end
 
-    [runningtally, explanations_blockingfactor, explanations_centrality]
+    [runningtally, explanations_blockingfactor, explanations_centrality, explanations_delayfactor]
 
 end
 
