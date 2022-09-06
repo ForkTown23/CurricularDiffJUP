@@ -480,6 +480,29 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         pretty_print_course_names(df_path_course_1)
         print("Course 2's delay factor path:")
         pretty_print_course_names(df_path_course_2)
+
+        # todo explain why
+        df_set_c1 = Set(df_path_course_1)
+        df_set_c2 = Set(df_path_course_2)
+
+        all_courses_in_paths = union(df_set_c1, df_set_c2)
+        for course in all_courses_in_paths
+            # find course to match name in curriculum1 and curriculum2
+            course_in_curr1 = course_from_name(curriculum1, course)
+            course_in_curr2 = course_from_name(curriculum2, course)
+            # find their prerequisites
+            prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, course_in_curr1)))
+            prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, course_in_curr2)))
+            # compare the prerequisites
+            # lost prereqs are those that from c1 to c2 got dropped
+            # gained prerqs are those that from c1 to c2 got added
+            lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
+            gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+            if (length(lost_prereqs) != 0 || length(gained_prereqs) != 0)
+                println("$(course) has had changes: lost $(prereq_print(lost_prereqs)) and gained $(prereq_print(gained_prereqs))")
+            end
+        end
+
     end
     # requisites
     # collate all the prerequisite names from course 1
@@ -499,7 +522,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     end
 
-    [runningtally, explanations_blockingfactor]
+    [runningtally, explanations_blockingfactor, explanations_centrality]
 
 end
 
