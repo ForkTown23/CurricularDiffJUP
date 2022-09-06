@@ -472,17 +472,6 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_prereqs["lost prereqs"] = collect(lost_prereqs)
     explanations_prereqs["gained prereqs"] = collect(gained_prereqs)
 
-    println("The sets of prerequisites being equal is $(issetequal(course1_prereqs, course2_prereqs))")
-    if (!issetequal(course1_prereqs, course2_prereqs))
-        println("Courses in course 1's prereq list:")
-        for course in course1_prereqs
-            println("\t$(course)")
-        end
-        println("Courses in course 2's prereq list:")
-        for course in course2_prereqs
-            println("\t$(course)")
-        end
-    end
 
     [runningtally, explanations_complexity, explanations_centrality, explanations_blockingfactor, explanations_delayfactor, explanations_prereqs]
 
