@@ -23,4 +23,4 @@ Todo:
 
 9/6/22:
 - [ ] Centrality investigative function
-- [ ] 
+- [ ] Refactor to use less course names and more courses to avoid converting back and forth
