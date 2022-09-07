@@ -1,4 +1,4 @@
-using CurricularAnalytics
+using CurricularAnalytics, Crayons.Box
 
 # helper functions
 function prereq_print(prereqs::Set{AbstractString})
@@ -179,6 +179,35 @@ function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_co
     # add myself to the chosen longest path and return that
     push!(longest_path_to_course_me, course_me)
     longest_path_to_course_me
+end
+
+function pretty_print_course_results(results::Dict{String,Dict}, course_name::AbstractString)
+    # this should pretty print results
+
+    # separator
+    println("-------------")
+    println(course_name)
+
+    # CENTRALITY
+    print("Centrality: ")
+    # highlight the centrality change: if its negative, that's good, so green. Else red
+    results["contribution to curriculum differences"]["centrality"] <= 0 ?
+    print(GREEN_BG, results["contribution to curriculum differences"]["centrality"]) :
+    print(RED_BG, results["contribution to curriculum differences"]["centrality"])
+    print("\n")
+
+    print(BLACK_BG, "Curriculum 1 score: $(results["centrality"]["course 1 score"])\tCurriculum 2 score: $(results["centrality"]["course 2 score"])\n")
+
+    print("Paths not in Curriculum 2:\n")
+    for path in results["centrality"]["paths not in c2"]
+        pretty_print_course_names(path)
+    end
+
+    print("Paths not in Curriculum 1:\n")
+    for path in results["centrality"]["paths not in c1"]
+        pretty_print_course_names(path)
+    end
+
 end
 
 # main functions
