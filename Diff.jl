@@ -472,9 +472,14 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_prereqs["lost prereqs"] = collect(lost_prereqs)
     explanations_prereqs["gained prereqs"] = collect(gained_prereqs)
 
-
-    [runningtally, explanations_complexity, explanations_centrality, explanations_blockingfactor, explanations_delayfactor, explanations_prereqs]
-
+    Dict(
+        "running tally" => runningtally,
+        "complexity" => explanations_complexity,
+        "centrality" => explanations_centrality,
+        "blocking factor" => explanations_blockingfactor,
+        "delay factor" => explanations_delayfactor,
+        "prereqs" => explanations_prereqs
+    )
 end
 
 function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
@@ -611,13 +616,8 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
                 results = course_diff(course, course2, curriculum1, curriculum2, runningTally, verbose)
-                runningTally = results[1]
-                all_results["courses"][course.name] = Dict()
-                all_results["courses"][course.name]["complexity"] = results[2]
-                all_results["courses"][course.name]["centrality"] = results[3]
-                all_results["courses"][course.name]["blocking factor"] = results[4]
-                all_results["courses"][course.name]["delay factor"] = results[5]
-                all_results["courses"][course.name]["prereq changes"] = results[6]
+                runningTally = results["running tally"]
+                all_results["courses"][course.name] = results
                 println("explained so far: $(runningTally["complexity"]), $(runningTally["centrality"]), $(runningTally["blocking factor"]), $(runningTally["delay factor"])")
             else
                 println("Something weird here, we have more than one match")
