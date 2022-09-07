@@ -52,8 +52,7 @@ function courses_that_depend_on_me(course_me::Course, curriculum::Curriculum)
         # look through the courses prerequisite
         for (key, value) in course.requisites
             # the key is what matters, it is the id of the course in the curriculum
-            if (value == pre && key == course_me.id) # let's skip co-reqs for now... interesting to see if this matters later
-
+            if (key == course_me.id) # let's skip co-reqs for now... interesting to see if this matters later. It does! see MATH 20B of BE25 in the sample data
                 push!(courses_that_depend_on_me, course)
             end
         end

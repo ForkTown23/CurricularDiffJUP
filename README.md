@@ -29,6 +29,7 @@ Todo:
 - [x] Delete all the previous prints
 - [x] Change running tally format to match dict output
 - [x] improve course_diff return formats
-- [ ] Swap runningtally to "contribution" to be able to isolate returns for course_diff
+- [x] Swap runningtally to "contribution" to be able to isolate returns for course_diff
+- [x] Fix issues with coreqs being ignored
 - [ ] New pretty print
 - [ ] New to-JSON print
