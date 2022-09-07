@@ -27,6 +27,7 @@ Todo:
     It's not yet super feasible until I know more about the set diff thing. If i don't convert to course names, running set diff on sets of courses is going to turn up tons of differences because the course objects themselves are not the same.
 - [x] Swap to return based system of dicts and arrays
 - [x] Delete all the previous prints
+- [ ] Change running tally format to match dict output
+- [ ] improve course_diff return format
 - [ ] New pretty print
 - [ ] New to-JSON print
-- [ ] 

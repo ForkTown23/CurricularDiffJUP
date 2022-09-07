@@ -183,7 +183,7 @@ function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_co
 end
 
 # main functions
-function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, runningtally::Vector{Float64}, verbose::Bool=true)
+function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, runningtally::Dict{String,Float64}, verbose::Bool=true)
     relevant_fields = filter(x ->
             x != :vertex_id &&
                 x != :cross_listed &&
@@ -217,7 +217,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has complexity $(course1.metrics["complexity"]) and Course 2 has complexity $(course2.metrics["complexity"])")
-        runningtally[1] += (course2.metrics["complexity"] - course1.metrics["complexity"])
+        runningtally["complexity"] += (course2.metrics["complexity"] - course1.metrics["complexity"])
     end
     # centrality
     explanations_centrality = Dict()
@@ -229,7 +229,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has centrality $(course1.metrics["centrality"]) and Course 2 has centrality $(course2.metrics["centrality"])")
-        runningtally[2] += (course2.metrics["centrality"] - course1.metrics["centrality"])
+        runningtally["centrality"] += (course2.metrics["centrality"] - course1.metrics["centrality"])
 
         # run the investigator and then compare
         centrality_c1 = centrality_investigator(course1, curriculum1)
@@ -335,7 +335,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
-        runningtally[3] += (course2.metrics["blocking factor"] - course1.metrics["blocking factor"])
+        runningtally["blocking factor"] += (course2.metrics["blocking factor"] - course1.metrics["blocking factor"])
 
         # since they have different blocking factors, investigate why and get a set of blocking factors
         unblocked_field_course_1 = blocking_factor_investigator(course1, curriculum1)
@@ -430,7 +430,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
-        runningtally[4] += (course2.metrics["delay factor"] - course1.metrics["delay factor"])
+        runningtally["delay factor"] += (course2.metrics["delay factor"] - course1.metrics["delay factor"])
         df_path_course_1 = courses_to_course_names(delay_factor_investigator(course1, curriculum1))
         df_path_course_2 = courses_to_course_names(delay_factor_investigator(course2, curriculum2))
 
@@ -592,7 +592,13 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             "delay factor" => curriculum2.metrics["delay factor"][1] - curriculum1.metrics["delay factor"][1],
         )
 
-        runningTally = [0.0, 0.0, 0.0, 0.0]
+        runningTally = Dict(
+            "complexity" => 0.0,
+            "centrality" => 0.0,
+            "blocking factor" => 0.0,
+            "delay factor" => 0.0
+        )
+
         all_results["to explain"] = explain
         all_results["courses"] = Dict()
         # for each course in curriculum 1, try to find a similarly named course in curriculum 2
@@ -612,16 +618,16 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
                 all_results["courses"][course.name]["blocking factor"] = results[4]
                 all_results["courses"][course.name]["delay factor"] = results[5]
                 all_results["courses"][course.name]["prereq changes"] = results[6]
-                println("explained so far: $(runningTally[1]), $(runningTally[2]), $(runningTally[3]), $(runningTally[4])")
+                println("explained so far: $(runningTally["complexity"]), $(runningTally["centrality"]), $(runningTally["blocking factor"]), $(runningTally["delay factor"])")
             else
                 println("Something weird here, we have more than one match")
             end
         end
         all_results["explained"] = Dict(
-            "complexity" => runningTally[1],
-            "centrality" => runningTally[2],
-            "blocking factor" => runningTally[3],
-            "delay factor" => runningTally[4]
+            "complexity" => runningTally["complexity"],
+            "centrality" => runningTally["centrality"],
+            "blocking factor" => runningTally["blocking factor"],
+            "delay factor" => runningTally["delay factor"]
         )
     end
     all_results
