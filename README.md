@@ -28,6 +28,7 @@ Todo:
 - [x] Swap to return based system of dicts and arrays
 - [x] Delete all the previous prints
 - [x] Change running tally format to match dict output
-- [ ] improve course_diff return format
+- [x] improve course_diff return formats
+- [ ] Swap runningtally to "contribution" to be able to isolate returns for course_diff
 - [ ] New pretty print
 - [ ] New to-JSON print

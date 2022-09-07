@@ -618,6 +618,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
                 results = course_diff(course, course2, curriculum1, curriculum2, runningTally, verbose)
                 runningTally = results["running tally"]
                 all_results["courses"][course.name] = results
+                # TODO: handle small bug in runningTally only containing the end results and no intermediate values
                 println("explained so far: $(runningTally["complexity"]), $(runningTally["centrality"]), $(runningTally["blocking factor"]), $(runningTally["delay factor"])")
             else
                 println("Something weird here, we have more than one match")
