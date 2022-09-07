@@ -264,6 +264,7 @@ function pretty_print_complexity_results(results::Dict{String,Dict})
     print(BLACK_BG, "Score in Curriculum 1: $(results["complexity"]["course 1 score"]) \t Score in Curriculum 2: $(results["complexity"]["course 2 score"])\n")
 
     pretty_print_blocking_factor_results(results)
+    pretty_print_delay_factor_results(results)
 end
 
 function pretty_print_blocking_factor_results(results::Dict{String,Dict})
@@ -350,6 +351,53 @@ function pretty_print_blocking_factor_results(results::Dict{String,Dict})
 
 
 end
+
+function pretty_print_delay_factor_results(results::Dict{String,Dict})
+    # Delay factor 
+    print("Delay Factor: ")
+    results["contribution to curriculum differences"]["delay factor"] <= 0 ?
+    print(GREEN_BG, results["contribution to curriculum differences"]["delay factor"]) :
+    print(RED_BG, results["contribution to curriculum differences"]["delay factor"])
+    print("\n")
+
+    print(BLACK_BG, "Score in Curriculum 1: $(results["delay factor"]["course 1 score"])\t Score in Curriculum 2: $(results["delay factor"]["course 2 score"])\n")
+
+    print("Delay Factor Path in Curriculum 1:\n")
+    pretty_print_course_names(results["delay factor"]["df path course 1"])
+
+    print("Delay Factor Path in Curriculum 2:\n")
+    pretty_print_course_names(results["delay factor"]["df path course 2"])
+
+    println("Courses involved that changed:")
+    for (key, value) in results["delay factor"]["courses involved"]
+        if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
+            print("$key:\n")
+            if (length(value["gained prereqs"]) != 0)
+                print("\tgained:")
+                for gain in value["gained prereqs"]
+                    print(" $gain")
+                end
+            else
+                print("\tno gained prereqs")
+            end
+            print("\n")
+            if (length(value["lost prereqs"]) != 0)
+                print("\tlost:")
+                for loss in value["lost prereqs"]
+                    print(" $loss")
+                end
+            else
+                print("\tno lost prereqs")
+            end
+            print("\n")
+        end
+    end
+end
+
+function pretty_print_prereq_changes(results::Dict{String,Dict})
+
+end
+
 function pretty_print_course_results(results::Dict{String,Dict}, course_name::AbstractString)
     # this should pretty print results
 
