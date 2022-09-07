@@ -183,7 +183,7 @@ function longest_path_to_me(course_me::Course, curriculum::Curriculum, filter_co
 end
 
 # main functions
-function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, runningtally::Dict{String,Float64}, verbose::Bool=true)
+function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
     relevant_fields = filter(x ->
             x != :vertex_id &&
                 x != :cross_listed &&
@@ -206,6 +206,13 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     end
 
+    contribution = Dict(
+        "complexity" => 0.0,
+        "centrality" => 0.0,
+        "blocking factor" => 0.0,
+        "delay factor" => 0.0
+    )
+
     # METRICS
     # complexity
     explanations_complexity = Dict()
@@ -217,7 +224,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has complexity $(course1.metrics["complexity"]) and Course 2 has complexity $(course2.metrics["complexity"])")
-        runningtally["complexity"] += (course2.metrics["complexity"] - course1.metrics["complexity"])
+        contribution["complexity"] = (course2.metrics["complexity"] - course1.metrics["complexity"])
     end
     # centrality
     explanations_centrality = Dict()
@@ -229,7 +236,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has centrality $(course1.metrics["centrality"]) and Course 2 has centrality $(course2.metrics["centrality"])")
-        runningtally["centrality"] += (course2.metrics["centrality"] - course1.metrics["centrality"])
+        contribution["centrality"] = (course2.metrics["centrality"] - course1.metrics["centrality"])
 
         # run the investigator and then compare
         centrality_c1 = centrality_investigator(course1, curriculum1)
@@ -335,7 +342,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
-        runningtally["blocking factor"] += (course2.metrics["blocking factor"] - course1.metrics["blocking factor"])
+        contribution["blocking factor"] = (course2.metrics["blocking factor"] - course1.metrics["blocking factor"])
 
         # since they have different blocking factors, investigate why and get a set of blocking factors
         unblocked_field_course_1 = blocking_factor_investigator(course1, curriculum1)
@@ -430,7 +437,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
         end
     else
         println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
-        runningtally["delay factor"] += (course2.metrics["delay factor"] - course1.metrics["delay factor"])
+        contribution["delay factor"] = (course2.metrics["delay factor"] - course1.metrics["delay factor"])
         df_path_course_1 = courses_to_course_names(delay_factor_investigator(course1, curriculum1))
         df_path_course_2 = courses_to_course_names(delay_factor_investigator(course2, curriculum2))
 
@@ -473,7 +480,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_prereqs["gained prereqs"] = collect(gained_prereqs)
 
     Dict(
-        "running tally" => runningtally,
+        "contribution to curriculum differences" => contribution,
         "complexity" => explanations_complexity,
         "centrality" => explanations_centrality,
         "blocking factor" => explanations_blockingfactor,
@@ -615,8 +622,11 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             elseif (length(matching_course) == 1)
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
-                results = course_diff(course, course2, curriculum1, curriculum2, runningTally, verbose)
-                runningTally = results["running tally"]
+                results = course_diff(course, course2, curriculum1, curriculum2, verbose)
+                contribution = results["contribution to curriculum differences"]
+                for (key, value) in runningTally
+                    runningTally[key] += contribution[key]
+                end
                 all_results["courses"][course.name] = results
                 # TODO: handle small bug in runningTally only containing the end results and no intermediate values
                 println("explained so far: $(runningTally["complexity"]), $(runningTally["centrality"]), $(runningTally["blocking factor"]), $(runningTally["delay factor"])")
