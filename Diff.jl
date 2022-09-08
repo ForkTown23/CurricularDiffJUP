@@ -1,7 +1,7 @@
 using CurricularAnalytics, Crayons.Box
 
-@enum DesiredStat ALL CEN COM BLO DEL
-# all, centrality, complexity, blocking, delay
+@enum DesiredStat ALL CEN COM BLO DEL PRE
+# all, centrality, complexity, blocking, delay, prereq
 
 # helper functions
 function prereq_print(prereqs::Set{AbstractString})
@@ -422,40 +422,34 @@ function pretty_print_prereq_changes(results::Dict{String,Dict})
 
 end
 
-function pretty_print_course_results(results::Dict{String,Dict}, course_name::AbstractString)
+function pretty_print_course_results(results::Dict{String,Dict}, course_name::AbstractString, desired_stat::DesiredStat)
     # this should pretty print results
 
     # separator
     println("-------------")
     println(course_name)
 
-    pretty_print_centrality_results(results)
-    pretty_print_complexity_results(results)
-    println("Prereq Changes:")
-    pretty_print_prereq_changes(results)
+    if (desired_stat == ALL || desired_stat == CEN)
+        pretty_print_centrality_results(results)
+    end
+    if (desired_stat == ALL || desired_stat == COM)
+        pretty_print_complexity_results(results)
+    end
+    if (desired_stat == BLO)
+        pretty_print_blocking_factor_results(results)
+    end
+    if (desired_stat == DEL)
+        pretty_print_delay_factor_results(results)
+    end
+    if (desired_stat == ALL || desired_stat == PRE)
+        println("Prereq Changes:")
+        pretty_print_prereq_changes(results)
+    end
 end
 
 function pretty_print_curriculum_results(curriculum_results::Dict{Any,Any}, desired_stat::DesiredStat)
     for (key, value) in curriculum_results["courses"]
-        if (desired_stat == ALL)
-            pretty_print_course_results(value, key)
-        elseif (desired_stat == CEN)
-            println("-------------")
-            println("$key: ")
-            pretty_print_centrality_results(value)
-        elseif (desired_stat == COM)
-            println("-------------")
-            println("$key: ")
-            pretty_print_complexity_results(value)
-        elseif (desired_stat == BLO)
-            println("-------------")
-            println("$key: ")
-            pretty_print_blocking_factor_results(value)
-        elseif (desired_stat == DEL)
-            println("-------------")
-            println("$key: ")
-            pretty_print_delay_factor_results(value)
-        end
+        pretty_print_course_results(value, key, desired_stat)
     end
 end
 
