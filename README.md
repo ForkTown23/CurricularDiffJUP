@@ -35,5 +35,6 @@ Todo:
 - [x] New pretty print
 
 9/8/22:
-- [ ] Executive Summary
+- [x] Executive Summary
+- [ ] Code for new and removed courses (i.e. those with no match)
 - [ ] New to-JSON print
