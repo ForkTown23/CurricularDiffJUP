@@ -395,6 +395,16 @@ function pretty_print_delay_factor_results(results::Dict{String,Dict})
 end
 
 function pretty_print_prereq_changes(results::Dict{String,Dict})
+    println("Gained prereqs:")
+    for course in results["prereqs"]["gained prereqs"]
+        print(" $course")
+    end
+    println("")
+    println("Lost prereqs:")
+    for course in results["prereqs"]["lost prereqs"]
+        print(" $course")
+    end
+    println("")
 
 end
 
@@ -407,6 +417,7 @@ function pretty_print_course_results(results::Dict{String,Dict}, course_name::Ab
 
     pretty_print_centrality_results(results)
     pretty_print_complexity_results(results)
+    println("Prereq Changes:")
 end
 
 # main functions
