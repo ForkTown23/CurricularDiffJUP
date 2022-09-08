@@ -34,9 +34,9 @@ end
 
 function pretty_print_course_names(courses::Vector{AbstractString})
     for course in courses
-        print("$(course)➡️")
+        print(BLACK_BG, "$(course)➡️")
     end
-    println(" ")
+    print(BLACK_BG, " \n")
 end
 
 function courses_to_course_names(courses::Vector{Course})
@@ -566,8 +566,13 @@ function executive_summary_course(results::Dict{String,Dict}, course_name::Abstr
         end
     end
     if (results["contribution to curriculum differences"]["delay factor"] != 0.0)
-        print("Delay Factor:\n")
-        print("Went from: ")
+        print("Delay Factor: ")
+        if (results["contribution to curriculum differences"]["delay factor"] > 0)
+            print(GREEN_BG, "Gained $(abs(results["contribution to curriculum differences"]["delay factor"]))")
+        else
+            print(RED_BG, "Lost $(abs(results["contribution to curriculum differences"]["delay factor"]))")
+        end
+        print(BLACK_BG, "\nWent from: ") # important, stops red/green from overflowing for some reason
         pretty_print_course_names(results["delay factor"]["df path course 1"])
         print("Length: $(results["delay factor"]["course 1 score"])\n")
         print("To: ")
