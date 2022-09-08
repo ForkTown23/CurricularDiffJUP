@@ -5,7 +5,7 @@ Todo:
 - [x] Blocking factor investigative function.
 - [x] Delay factor investigative function.
 - [x] Centrality investigative function.
-- [ ] Prettier output (MUCH PRETTIER)
+- [x] Prettier output (Still make it prettier, but this works right now)
 - [ ] Consider removing redundant explanations (or mushing them together) like blocking factor of course A changing because its not a prereq of course B and then saying Course A is not a prereq of Course B. Probably mush them together
 - [ ] Consider using levels of verbosity.
 - [x] Running tally of complexity score differences (presumably *from* curriculum 1 *to* curriculum 2)
@@ -31,5 +31,8 @@ Todo:
 - [x] improve course_diff return formats
 - [x] Swap runningtally to "contribution" to be able to isolate returns for course_diff
 - [x] Fix issues with coreqs being ignored
-- [ ] New pretty print
+9/7/22:
+- [x] New pretty print
+
+9/8/22:
 - [ ] New to-JSON print
