@@ -453,6 +453,155 @@ function pretty_print_curriculum_results(curriculum_results::Dict{Any,Any}, desi
     end
 end
 
+function executive_summary_course(results::Dict{String,Dict}, course_name::AbstractString)
+    println("----------------")
+    println("$course_name:")
+    if (results["contribution to curriculum differences"]["centrality"] != 0.0)
+        if (length(results["centrality"]["paths not in c2"]) != 0)
+            # find the total sum of paths not in c2
+            lost_paths = sum(length(path) for path in results["centrality"]["paths not in c2"])
+            print(RED_BG, "Lost $(lost_paths) centrality ")
+            print(BLACK_BG, "due to:\n")
+            for (key, course) in results["centrality"]["courses not in c2 paths"]
+                if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0)
+                    print("\t$key:")
+                    if (length(course["lost prereqs"]) != 0)
+                        print("\t losing")
+                        for loss in course["lost prereqs"]
+                            print(" $loss")
+                        end
+                    end
+                    if (length(course["gained prereqs"]) != 0)
+                        print("\t gaining")
+                        for gain in course["gained prereqs"]
+                            print(" $gain")
+                        end
+                    end
+                    println("")
+                end
+            end
+        end
+        if (length(results["centrality"]["paths not in c1"]) != 0)
+            # find the total sum of paths not in c1
+            gained_paths = sum(length(path) for path in results["centrality"]["paths not in c1"])
+            print(GREEN_BG, "Gained $(gained_paths) centrality ")
+            print(BLACK_BG, "due to:\n")
+            for (key, course) in results["centrality"]["courses not in c1 paths"]
+                if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0)
+                    print("\t$key:")
+                    if (length(course["lost prereqs"]) != 0)
+                        print("\t losing")
+                        for loss in course["lost prereqs"]
+                            print(" $loss")
+                        end
+                    end
+                    if (length(course["gained prereqs"]) != 0)
+                        print("\t gaining")
+                        for gain in course["gained prereqs"]
+                            print(" $gain")
+                        end
+                    end
+                    println("")
+                end
+            end
+        end
+    end
+    if (results["contribution to curriculum differences"]["blocking factor"] != 0.0)
+        if (results["blocking factor"]["length not in c2 ufield"] != 0)
+            print(RED_BG, "Lost $(results["blocking factor"]["length not in c2 ufield"]) courses in blocking factor ")
+            print(BLACK_BG, "due to:\n")
+            for (key, course) in results["blocking factor"]["not in c2 ufield"]
+                if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0 || length(course["in_both"]) != 0)
+                    print("\t$key")
+                    if (length(course["lost prereqs"]) != 0)
+                        print("\t losing")
+                        for loss in course["lost prereqs"]
+                            print(" $loss")
+                        end
+                    end
+                    if (length(course["gained prereqs"]) != 0)
+                        print("\t gaining")
+                        for gain in course["gained prereqs"]
+                            print(" $gain")
+                        end
+                    end
+                    if (length(course["in_both"]) != 0)
+                        print("\tdepending on")
+                        for overlap in course["in_both"]
+                            print(" $overlap")
+                        end
+                    end
+                    println("")
+                end
+
+            end
+        end
+        if (results["blocking factor"]["length not in c1 ufield"] != 0)
+            print(GREEN_BG, "Gained $(results["blocking factor"]["length not in c1 ufield"]) courses in blocking factor ")
+            print(BLACK_BG, "due to:\n")
+            for (key, course) in results["blocking factor"]["not in c1 ufield"]
+                if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0 || length(course["in_both"]) != 0)
+                    print("\t$key")
+                    if (length(course["lost prereqs"]) != 0)
+                        print("\t losing")
+                        for loss in course["lost prereqs"]
+                            print(" $loss")
+                        end
+                    end
+                    if (length(course["gained prereqs"]) != 0)
+                        print("\t gaining")
+                        for gain in course["gained prereqs"]
+                            print(" $gain")
+                        end
+                    end
+                    if (length(course["in_both"]) != 0)
+                        print("\tdepending on")
+                        for overlap in course["in_both"]
+                            print(" $overlap")
+                        end
+                    end
+                    println("")
+                end
+            end
+        end
+    end
+    if (results["contribution to curriculum differences"]["delay factor"] != 0.0)
+        print("Delay Factor:\n")
+        print("Went from: ")
+        pretty_print_course_names(results["delay factor"]["df path course 1"])
+        print("Length: $(results["delay factor"]["course 1 score"])\n")
+        print("To: ")
+        pretty_print_course_names(results["delay factor"]["df path course 2"])
+        print("Length: $(results["delay factor"]["course 2 score"])\n")
+        print("Due to:\n")
+        for (key, course) in results["delay factor"]["courses involved"]
+            if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0)
+                print("\t$key")
+                if (length(course["lost prereqs"]) != 0)
+                    print("\t losing")
+                    for loss in course["lost prereqs"]
+                        print(" $loss")
+                    end
+                end
+                if (length(course["gained prereqs"]) != 0)
+                    print("\t gaining")
+                    for gain in course["gained prereqs"]
+                        print(" $gain")
+                    end
+                end
+                println("")
+            end
+        end
+    end
+end
+
+function executive_summary_curriculum(curriculum_results::Dict{Any,Any})
+    for (key, value) in curriculum_results["courses"]
+        if (value["contribution to curriculum differences"]["centrality"] != 0.0 || value["contribution to curriculum differences"]["blocking factor"] != 0.0 || value["contribution to curriculum differences"]["delay factor"] != 0.0)
+            executive_summary_course(value, key)
+        end
+    end
+end
 # main functions
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
     relevant_fields = filter(x ->
@@ -701,7 +850,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     # delay factor
     explanations_delayfactor = Dict()
     explanations_delayfactor["course 1 score"] = course1.metrics["delay factor"]
-    explanations_delayfactor["course 2 score"] = course1.metrics["delay factor"]
+    explanations_delayfactor["course 2 score"] = course2.metrics["delay factor"]
     if (course1.metrics["delay factor"] == course2.metrics["delay factor"])
         if (verbose)
             println("✅Course 1 and Course 2 have the same delay factor: $(course1.metrics["delay factor"])")
@@ -912,6 +1061,6 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
             "delay factor" => runningTally["delay factor"]
         )
     end
-    pretty_print_curriculum_results(all_results, desired_stat)
+    executive_summary_curriculum(all_results)
     all_results
 end
