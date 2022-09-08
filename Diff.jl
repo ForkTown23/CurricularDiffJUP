@@ -1,5 +1,8 @@
 using CurricularAnalytics, Crayons.Box
 
+@enum DesiredStat ALL CEN COM BLO DEL
+# all, centrality, complexity, blocking, delay
+
 # helper functions
 function prereq_print(prereqs::Set{AbstractString})
     string = " "
@@ -192,63 +195,67 @@ function pretty_print_centrality_results(results::Dict{String,Dict})
 
     print(BLACK_BG, "Curriculum 1 score: $(results["centrality"]["course 1 score"])\tCurriculum 2 score: $(results["centrality"]["course 2 score"])\n")
 
-    print("Paths not in Curriculum 2:\n")
-    for path in results["centrality"]["paths not in c2"]
-        pretty_print_course_names(path)
-    end
+    if ("paths not in c2" in keys(results["centrality"]))
+        print("Paths not in Curriculum 2:\n")
+        for path in results["centrality"]["paths not in c2"]
+            pretty_print_course_names(path)
+        end
 
-    print("Courses in \"not in Curriculum 2 Paths\": (WORKING TITLE-ONLY INCLUDING THE ONES WITH CHANGES HERE)\n")
-    for (key, value) in results["centrality"]["courses not in c2 paths"]
-        if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
-            print("$key: ")
-            if (length(value["gained prereqs"]) != 0)
-                print("\tgained:")
-                for gain in value["gained prereqs"]
-                    print(" $gain")
+        print("Courses in \"not in Curriculum 2 Paths\": (WORKING TITLE-ONLY INCLUDING THE ONES WITH CHANGES HERE)\n")
+        for (key, value) in results["centrality"]["courses not in c2 paths"]
+            if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
+                print("$key: ")
+                if (length(value["gained prereqs"]) != 0)
+                    print("\tgained:")
+                    for gain in value["gained prereqs"]
+                        print(" $gain")
+                    end
+                else
+                    print("\tdidn't gain any prereqs")
                 end
-            else
-                print("\tdidn't gain any prereqs")
-            end
-            print("\tand")
-            if (length(value["lost prereqs"]) != 0)
-                print("\tlost:")
-                for loss in value["lost prereqs"]
-                    print(" $loss")
+                print("\tand")
+                if (length(value["lost prereqs"]) != 0)
+                    print("\tlost:")
+                    for loss in value["lost prereqs"]
+                        print(" $loss")
+                    end
+                else
+                    print("\tdidn't lose any prereqs")
                 end
-            else
-                print("\tdidn't lose any prereqs")
+                print("\n")
             end
-            print("\n")
         end
     end
 
-    print("Paths not in Curriculum 1:\n")
-    for path in results["centrality"]["paths not in c1"]
-        pretty_print_course_names(path)
-    end
+    if ("paths not in c1" in keys(results["centrality"]))
+        print("Paths not in Curriculum 1:\n")
+        for path in results["centrality"]["paths not in c1"]
+            pretty_print_course_names(path)
+        end
 
-    print("Courses in \"not in Curriculum 1 Paths\": (WORKING TITLE-ONLY INCLUDING THE ONES WITH CHANGES HERE)\n")
-    for (key, value) in results["centrality"]["courses not in c1 paths"]
-        if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
-            print("$key: ")
-            if (length(value["gained prereqs"]) != 0)
-                print("\tgained:")
-                for gain in value["gained prereqs"]
-                    print(" $gain")
+        print("Courses in \"not in Curriculum 1 Paths\": (WORKING TITLE-ONLY INCLUDING THE ONES WITH CHANGES HERE)\n")
+        for (key, value) in results["centrality"]["courses not in c1 paths"]
+            if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
+                print("$key: ")
+                if (length(value["gained prereqs"]) != 0)
+                    print("\tgained:")
+                    for gain in value["gained prereqs"]
+                        print(" $gain")
+                    end
+                else
+                    print("\tdidn't gain any prereqs")
                 end
-            else
-                print("\tdidn't gain any prereqs")
-            end
-            print("\tand")
-            if (length(value["lost prereqs"]) != 0)
-                print("\tlost:")
-                for loss in value["lost prereqs"]
-                    print(" $loss")
+                print("\tand")
+                if (length(value["lost prereqs"]) != 0)
+                    print("\tlost:")
+                    for loss in value["lost prereqs"]
+                        print(" $loss")
+                    end
+                else
+                    print("\tdidn't lose any prereqs")
                 end
-            else
-                print("\tdidn't lose any prereqs")
+                print("\n")
             end
-            print("\n")
         end
     end
 end
@@ -259,7 +266,7 @@ function pretty_print_complexity_results(results::Dict{String,Dict})
     print(GREEN_BG, results["contribution to curriculum differences"]["complexity"]) :
     print(RED_BG, results["contribution to curriculum differences"]["complexity"])
 
-    print("\n")
+    print(BLACK_BG, "\n")
 
     print(BLACK_BG, "Score in Curriculum 1: $(results["complexity"]["course 1 score"]) \t Score in Curriculum 2: $(results["complexity"]["course 2 score"])\n")
 
@@ -275,81 +282,86 @@ function pretty_print_blocking_factor_results(results::Dict{String,Dict})
     print(RED_BG, results["contribution to curriculum differences"]["blocking factor"])
     print("\n")
 
-    print(BLACK_BG, "Score in Curriculum 1: $(results["blocking factor"]["course 1 score"])\t Score in Curriculum 2: $(results["blocking factor"]["course 2 score"])\n")
+    print(BLACK_BG, "Score in Curriculum 1: $(results["blocking factor"]["course 1 score"])")
+    print(BLACK_BG, "\t")
+    print(BLACK_BG, "Score in Curriculum 2: $(results["blocking factor"]["course 2 score"])")
+    print(BLACK_BG, "\n")
 
-    if (length(results["blocking factor"]["not in c2 ufield"]) != 0)
-        print("Courses not in this course's unblocked field in curriculum 2:\n")
-        for (key, value) in results["blocking factor"]["not in c2 ufield"]
-            print("$(key):\n")
-            if (length(value["gained prereqs"]) != 0)
-                print("\tgained:")
-                for gain in value["gained prereqs"]
-                    print(" $gain")
+    if ("not in c2 ufield" in keys(results["blocking factor"]))
+        if (length(results["blocking factor"]["not in c2 ufield"]) != 0)
+            print("Courses not in this course's unblocked field in curriculum 2:\n")
+            for (key, value) in results["blocking factor"]["not in c2 ufield"]
+                print("$(key):\n")
+                if (length(value["gained prereqs"]) != 0)
+                    print("\tgained:")
+                    for gain in value["gained prereqs"]
+                        print(" $gain")
+                    end
+                else
+                    print("\tno gained prereqs")
                 end
-            else
-                print("\tno gained prereqs")
-            end
-            print("\n")
-            if (length(value["lost prereqs"]) != 0)
-                print("\tlost:")
-                for loss in value["lost prereqs"]
-                    print(" $loss")
+                print("\n")
+                if (length(value["lost prereqs"]) != 0)
+                    print("\tlost:")
+                    for loss in value["lost prereqs"]
+                        print(" $loss")
+                    end
+                else
+                    print("\tno lost prereqs")
                 end
-            else
-                print("\tno lost prereqs")
-            end
-            print("\n")
-            if (length(value["in_both"]) != 0)
-                print("\talso has as prereq:")
-                for overlap in value["in_both"]
-                    print(" $(overlap)")
+                print("\n")
+                if (length(value["in_both"]) != 0)
+                    print("\talso has as prereq:")
+                    for overlap in value["in_both"]
+                        print(" $(overlap)")
+                    end
+                else
+                    print("\tno dependency on another course in this list")
                 end
-            else
-                print("\tno dependency on another course in this list")
+                print("\n")
             end
-            print("\n")
+        else
+            println("All courses in the Curriculum 1 unblocked field are in the Curriculum 2 unblocked field")
         end
-    else
-        println("All courses in the Curriculum 1 unblocked field are in the Curriculum 2 unblocked field")
     end
 
-    if (length(results["blocking factor"]["not in c1 ufield"]) != 0)
-        print("Courses not in this course's unblocked field in curriculum 1:\n")
-        for (key, value) in results["blocking factor"]["not in c1 ufield"]
-            print("$(key):\n")
-            if (length(value["gained prereqs"]) != 0)
-                print("\tgained:")
-                for gain in value["gained prereqs"]
-                    print(" $gain")
+    if ("not in c1 ufield" in keys(results["blocking factor"]))
+        if (length(results["blocking factor"]["not in c1 ufield"]) != 0)
+            print("Courses not in this course's unblocked field in curriculum 1:\n")
+            for (key, value) in results["blocking factor"]["not in c1 ufield"]
+                print("$(key):\n")
+                if (length(value["gained prereqs"]) != 0)
+                    print("\tgained:")
+                    for gain in value["gained prereqs"]
+                        print(" $gain")
+                    end
+                else
+                    print("\tno gained prereqs")
                 end
-            else
-                print("\tno gained prereqs")
-            end
-            print("\n")
-            if (length(value["lost prereqs"]) != 0)
-                print("\tlost:")
-                for loss in value["lost prereqs"]
-                    print(" $loss")
+                print("\n")
+                if (length(value["lost prereqs"]) != 0)
+                    print("\tlost:")
+                    for loss in value["lost prereqs"]
+                        print(" $loss")
+                    end
+                else
+                    print("\tno lost prereqs")
                 end
-            else
-                print("\tno lost prereqs")
-            end
-            print("\n")
-            if (length(value["in_both"]) != 0)
-                print("\talso has as prereq:")
-                for overlap in value["in_both"]
-                    print(" $(overlap)")
+                print("\n")
+                if (length(value["in_both"]) != 0)
+                    print("\talso has as prereq:")
+                    for overlap in value["in_both"]
+                        print(" $(overlap)")
+                    end
+                else
+                    print("\tno dependency on another course in this list")
                 end
-            else
-                print("\tno dependency on another course in this list")
+                print("\n")
             end
-            print("\n")
+        else
+            println("All courses in the Curriculum 2 unblocked field are in the Curriculum 1 unblocked field")
         end
-    else
-        println("All courses in the Curriculum 2 unblocked field are in the Curriculum 1 unblocked field")
     end
-
-
 end
 
 function pretty_print_delay_factor_results(results::Dict{String,Dict})
@@ -362,34 +374,36 @@ function pretty_print_delay_factor_results(results::Dict{String,Dict})
 
     print(BLACK_BG, "Score in Curriculum 1: $(results["delay factor"]["course 1 score"])\t Score in Curriculum 2: $(results["delay factor"]["course 2 score"])\n")
 
-    print("Delay Factor Path in Curriculum 1:\n")
-    pretty_print_course_names(results["delay factor"]["df path course 1"])
+    if ("df path course 1" in keys(results["delay factor"])) # if there's one there both
+        print("Delay Factor Path in Curriculum 1:\n")
+        pretty_print_course_names(results["delay factor"]["df path course 1"])
 
-    print("Delay Factor Path in Curriculum 2:\n")
-    pretty_print_course_names(results["delay factor"]["df path course 2"])
+        print("Delay Factor Path in Curriculum 2:\n")
+        pretty_print_course_names(results["delay factor"]["df path course 2"])
 
-    println("Courses involved that changed:")
-    for (key, value) in results["delay factor"]["courses involved"]
-        if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
-            print("$key:\n")
-            if (length(value["gained prereqs"]) != 0)
-                print("\tgained:")
-                for gain in value["gained prereqs"]
-                    print(" $gain")
+        println("Courses involved that changed:")
+        for (key, value) in results["delay factor"]["courses involved"]
+            if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
+                print("$key:\n")
+                if (length(value["gained prereqs"]) != 0)
+                    print("\tgained:")
+                    for gain in value["gained prereqs"]
+                        print(" $gain")
+                    end
+                else
+                    print("\tno gained prereqs")
                 end
-            else
-                print("\tno gained prereqs")
-            end
-            print("\n")
-            if (length(value["lost prereqs"]) != 0)
-                print("\tlost:")
-                for loss in value["lost prereqs"]
-                    print(" $loss")
+                print("\n")
+                if (length(value["lost prereqs"]) != 0)
+                    print("\tlost:")
+                    for loss in value["lost prereqs"]
+                        print(" $loss")
+                    end
+                else
+                    print("\tno lost prereqs")
                 end
-            else
-                print("\tno lost prereqs")
+                print("\n")
             end
-            print("\n")
         end
     end
 end
@@ -418,6 +432,31 @@ function pretty_print_course_results(results::Dict{String,Dict}, course_name::Ab
     pretty_print_centrality_results(results)
     pretty_print_complexity_results(results)
     println("Prereq Changes:")
+    pretty_print_prereq_changes(results)
+end
+
+function pretty_print_curriculum_results(curriculum_results::Dict{Any,Any}, desired_stat::DesiredStat)
+    for (key, value) in curriculum_results["courses"]
+        if (desired_stat == ALL)
+            pretty_print_course_results(value, key)
+        elseif (desired_stat == CEN)
+            println("-------------")
+            println("$key: ")
+            pretty_print_centrality_results(value)
+        elseif (desired_stat == COM)
+            println("-------------")
+            println("$key: ")
+            pretty_print_complexity_results(value)
+        elseif (desired_stat == BLO)
+            println("-------------")
+            println("$key: ")
+            pretty_print_blocking_factor_results(value)
+        elseif (desired_stat == DEL)
+            println("-------------")
+            println("$key: ")
+            pretty_print_delay_factor_results(value)
+        end
+    end
 end
 
 # main functions
@@ -727,7 +766,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     )
 end
 
-function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
+function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desired_stat::DesiredStat, verbose::Bool=true)
     # using fieldnames instead of explicit names
     relevant_fields = filter(x ->
             x != :courses &&
@@ -879,5 +918,6 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             "delay factor" => runningTally["delay factor"]
         )
     end
+    pretty_print_curriculum_results(all_results, desired_stat)
     all_results
 end
