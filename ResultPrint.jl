@@ -1,4 +1,5 @@
 include("./Diff.jl")
+@enum DesiredStat ALL CEN COM BLO DEL PRE
 
 function executive_summary_course(results::Dict{String,Dict}, course_name::AbstractString)
     println("----------------")
@@ -191,7 +192,6 @@ function executive_summary_curriculum(curriculum_results::Dict{Any,Any})
     end
 end
 
-@enum DesiredStat ALL CEN COM BLO DEL PRE
 function pretty_print_centrality_results(results::Dict{String,Dict})
     # CENTRALITY -----------------------------------------------------------------------
     print("Centrality: ")
