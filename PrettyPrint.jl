@@ -1,4 +1,5 @@
 include("./Diff.jl")
+include("./ExecSummary.jl")
 
 @enum DesiredStat ALL CEN COM BLO DEL PRE
 function pretty_print_centrality_results(results::Dict{String,Dict})
@@ -272,5 +273,12 @@ end
 function pretty_print_curriculum_results(curriculum_results::Dict{Any,Any}, desired_stat::DesiredStat)
     for (key, value) in curriculum_results["matched courses"]
         pretty_print_course_results(value, key, desired_stat)
+    end
+    if (length(curriculum_results["unmatched courses"]) != 0)
+        println("*******")
+        println("Unmatched courses:")
+        for (key, value) in curriculum_results["unmatched courses"]
+            executive_summary_unmatched_course(value, key)
+        end
     end
 end
