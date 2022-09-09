@@ -601,11 +601,24 @@ function executive_summary_course(results::Dict{String,Dict}, course_name::Abstr
 end
 
 function executive_summary_curriculum(curriculum_results::Dict{Any,Any})
-    for (key, value) in curriculum_results["courses"]
+    for (key, value) in curriculum_results["matched courses"]
         if (value["contribution to curriculum differences"]["centrality"] != 0.0 || value["contribution to curriculum differences"]["blocking factor"] != 0.0 || value["contribution to curriculum differences"]["delay factor"] != 0.0)
             executive_summary_course(value, key)
         end
     end
+
+end
+
+function course_diff_for_unmatched_course(course::Course, c1::Bool)
+    results = Dict()
+
+    results["c1"] = c1
+    results["complexity"] = course.metrics["complexity"]
+    results["centrality"] = course.metrics["centrality"]
+    results["prereqs"] = course.metrics["prereqs"]
+    results["blocking factor"] = course.metrics["blocking factor"]
+    results["delay factor"] = course.metrics["delay factor"]
+    results
 end
 # main functions
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
@@ -1037,13 +1050,17 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
         )
 
         all_results["to explain"] = explain
-        all_results["courses"] = Dict()
+        all_results["matched courses"] = Dict()
         # for each course in curriculum 1, try to find a similarly named course in curriculum 2
         for course in curriculum1.courses
             # this is the catch: MATH 20A and MATH 20A or 10A are not going to match
             matching_course = filter(x -> x.name == course.name, curriculum2.courses)
             if (length(matching_course) == 0)
                 println("No matching course found for $(course.name)")
+                # do stuff for courses with no match from c1 to c2
+                # best idea here is to have a special diff for them 
+                # where everything is gained or lost
+                course_diff_for_unmatched_course(course, true)
             elseif (length(matching_course) == 1)
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
@@ -1052,7 +1069,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
                 for (key, value) in runningTally
                     runningTally[key] += contribution[key]
                 end
-                all_results["courses"][course.name] = results
+                all_results["matched courses"][course.name] = results
                 # TODO: handle small bug in runningTally only containing the end results and no intermediate values
                 println("explained so far: $(runningTally["complexity"]), $(runningTally["centrality"]), $(runningTally["blocking factor"]), $(runningTally["delay factor"])")
             else
