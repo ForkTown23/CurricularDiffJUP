@@ -728,6 +728,8 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             c2 = course_from_name(curriculum2, course)
             # find their prerequisites
             prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, c1)))
+
+            isnothing(c2) ? prereqs_in_curr2 = Set() :
             prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, c2)))
             # compare the prerequisites
             # lost prereqs are those that from c1 to c2 got dropped
@@ -755,6 +757,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             c1 = course_from_name(curriculum1, course)
             c2 = course_from_name(curriculum2, course)
             # find their prerequisites
+            isnothing(c1) ? prereqs_in_curr1 = Set() :
             prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, c1)))
             prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, c2)))
             # compare the prerequisites
