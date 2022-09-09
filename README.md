@@ -36,5 +36,7 @@ Todo:
 
 9/8/22:
 - [x] Executive Summary
+
+9/9/22
 - [ ] Code for new and removed courses (i.e. those with no match)
 - [ ] New to-JSON print
