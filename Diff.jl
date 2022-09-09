@@ -801,17 +801,22 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
                 # find course to match name in curriculum1 and curriculum2
                 course_in_curr1 = course_from_name(curriculum1, course_name)
                 course_in_curr2 = course_from_name(curriculum2, course_name)
-                # find their prerequisites
-                prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, course_in_curr1)))
-                prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, course_in_curr2)))
-                # compare the prerequisites
-                # lost prereqs are those that from c1 to c2 got dropped
-                # gained prerqs are those that from c1 to c2 got added
-                lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
-                gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
-                explanations_blockingfactor["not in c2 ufield"][course_name]["lost prereqs"] = collect(lost_prereqs)
-                explanations_blockingfactor["not in c2 ufield"][course_name]["gained prereqs"] = collect(gained_prereqs)
-
+                if (!isnothing(course_in_curr2))
+                    # find their prerequisites
+                    prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, course_in_curr1)))
+                    prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, course_in_curr2)))
+                    # compare the prerequisites
+                    # lost prereqs are those that from c1 to c2 got dropped
+                    # gained prerqs are those that from c1 to c2 got added
+                    lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
+                    gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+                    explanations_blockingfactor["not in c2 ufield"][course_name]["lost prereqs"] = collect(lost_prereqs)
+                    explanations_blockingfactor["not in c2 ufield"][course_name]["gained prereqs"] = collect(gained_prereqs)
+                else
+                    # if there's no match in curriculum 2, then just say all the prereqs were lost and none were gained
+                    explanations_blockingfactor["not in c2 ufield"][course_name]["lost prereqs"] = courses_to_course_names(get_course_prereqs(curriculum1, course_in_curr1))
+                    explanations_blockingfactor["not in c2 ufield"][course_name]["gained prereqs"] = []
+                end
                 # check if the prereqs haven't changed. If they haven't changed, we need to find which of their prereqs did
                 if (length(lost_prereqs) == 0 && length(gained_prereqs) == 0)
                     # find this course's prereqs and match them with any other courses in not_in_c2_unbl_field
@@ -839,15 +844,22 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
                 # find course to match name in curriculum1 and curriculum2
                 course_in_curr1 = course_from_name(curriculum1, course_name)
                 course_in_curr2 = course_from_name(curriculum2, course_name)
-                # find their prerequisites
-                prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, course_in_curr1)))
-                prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, course_in_curr2)))
-                # compare the prerequisites
-                lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
-                gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
 
-                explanations_blockingfactor["not in c1 ufield"][course_name]["lost prereqs"] = collect(lost_prereqs)
-                explanations_blockingfactor["not in c1 ufield"][course_name]["gained prereqs"] = collect(gained_prereqs)
+                if (!isnothing(course_in_curr1))
+                    # find their prerequisites
+                    prereqs_in_curr1 = Set(courses_to_course_names(get_course_prereqs(curriculum1, course_in_curr1)))
+                    prereqs_in_curr2 = Set(courses_to_course_names(get_course_prereqs(curriculum2, course_in_curr2)))
+                    # compare the prerequisites
+                    lost_prereqs = setdiff(prereqs_in_curr1, prereqs_in_curr2)
+                    gained_prereqs = setdiff(prereqs_in_curr2, prereqs_in_curr1)
+
+                    explanations_blockingfactor["not in c1 ufield"][course_name]["lost prereqs"] = collect(lost_prereqs)
+                    explanations_blockingfactor["not in c1 ufield"][course_name]["gained prereqs"] = collect(gained_prereqs)
+                else
+                    # if there's no match in curriculum 2, then just say that all the prereqs have been gained and none were lost
+                    explanations_blockingfactor["not in c1 ufield"][course_name]["lost prereqs"] = []
+                    explanations_blockingfactor["not in c1 ufield"][course_name]["gained prereqs"] = courses_to_course_names(get_course_prereqs(curriculum2, course_in_curr2))
+                end
                 # check if the prereqs haven't changed. If they haven't changed, we need to find which of their prereqs did
                 if (length(lost_prereqs) == 0 && length(gained_prereqs) == 0)
                     # find this course's prereqs and match them with any other courses in not_in_c1_unbl_field
