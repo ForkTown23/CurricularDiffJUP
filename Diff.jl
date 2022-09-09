@@ -460,7 +460,7 @@ function executive_summary_course(results::Dict{String,Dict}, course_name::Abstr
         if (length(results["centrality"]["paths not in c2"]) != 0)
             # find the total sum of paths not in c2
             lost_paths = sum(length(path) for path in results["centrality"]["paths not in c2"])
-            print(RED_BG, "Lost $(lost_paths) centrality ")
+            print(GREEN_BG, "Lost $(lost_paths) centrality ")
             print(BLACK_BG, "due to:\n")
             for (key, course) in results["centrality"]["courses not in c2 paths"]
                 if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0)
@@ -484,7 +484,7 @@ function executive_summary_course(results::Dict{String,Dict}, course_name::Abstr
         if (length(results["centrality"]["paths not in c1"]) != 0)
             # find the total sum of paths not in c1
             gained_paths = sum(length(path) for path in results["centrality"]["paths not in c1"])
-            print(GREEN_BG, "Gained $(gained_paths) centrality ")
+            print(RED_BG, "Gained $(gained_paths) centrality ")
             print(BLACK_BG, "due to:\n")
             for (key, course) in results["centrality"]["courses not in c1 paths"]
                 if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0)
@@ -508,7 +508,7 @@ function executive_summary_course(results::Dict{String,Dict}, course_name::Abstr
     end
     if (results["contribution to curriculum differences"]["blocking factor"] != 0.0)
         if (results["blocking factor"]["length not in c2 ufield"] != 0)
-            print(RED_BG, "Lost $(results["blocking factor"]["length not in c2 ufield"]) courses in blocking factor ")
+            print(GREEN_BG, "Lost $(results["blocking factor"]["length not in c2 ufield"]) courses in blocking factor ")
             print(BLACK_BG, "due to:\n")
             for (key, course) in results["blocking factor"]["not in c2 ufield"]
                 if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0 || length(course["in_both"]) != 0)
@@ -537,7 +537,7 @@ function executive_summary_course(results::Dict{String,Dict}, course_name::Abstr
             end
         end
         if (results["blocking factor"]["length not in c1 ufield"] != 0)
-            print(GREEN_BG, "Gained $(results["blocking factor"]["length not in c1 ufield"]) courses in blocking factor ")
+            print(RED_BG, "Gained $(results["blocking factor"]["length not in c1 ufield"]) courses in blocking factor ")
             print(BLACK_BG, "due to:\n")
             for (key, course) in results["blocking factor"]["not in c1 ufield"]
                 if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0 || length(course["in_both"]) != 0)
@@ -568,9 +568,9 @@ function executive_summary_course(results::Dict{String,Dict}, course_name::Abstr
     if (results["contribution to curriculum differences"]["delay factor"] != 0.0)
         print("Delay Factor: ")
         if (results["contribution to curriculum differences"]["delay factor"] > 0)
-            print(GREEN_BG, "Gained $(abs(results["contribution to curriculum differences"]["delay factor"]))")
+            print(RED_BG, "Gained $(abs(results["contribution to curriculum differences"]["delay factor"]))")
         else
-            print(RED_BG, "Lost $(abs(results["contribution to curriculum differences"]["delay factor"]))")
+            print(GREEN_BG, "Lost $(abs(results["contribution to curriculum differences"]["delay factor"]))")
         end
         print(BLACK_BG, "\nWent from: ") # important, stops red/green from overflowing for some reason
         pretty_print_course_names(results["delay factor"]["df path course 1"])
@@ -1164,7 +1164,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
             "delay factor" => runningTally["delay factor"]
         )
     end
-    pretty_print_curriculum_results(all_results, desired_stat)
-    #executive_summary_curriculum(all_results)
+    #pretty_print_curriculum_results(all_results, desired_stat)
+    executive_summary_curriculum(all_results)
     all_results
 end
