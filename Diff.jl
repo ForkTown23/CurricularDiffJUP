@@ -280,7 +280,7 @@ function pretty_print_blocking_factor_results(results::Dict{String,Dict})
     results["contribution to curriculum differences"]["blocking factor"] <= 0 ?
     print(GREEN_BG, results["contribution to curriculum differences"]["blocking factor"]) :
     print(RED_BG, results["contribution to curriculum differences"]["blocking factor"])
-    print("\n")
+    print(BLACK_BG, "\n")
 
     print(BLACK_BG, "Score in Curriculum 1: $(results["blocking factor"]["course 1 score"])")
     print(BLACK_BG, "\t")
@@ -370,7 +370,7 @@ function pretty_print_delay_factor_results(results::Dict{String,Dict})
     results["contribution to curriculum differences"]["delay factor"] <= 0 ?
     print(GREEN_BG, results["contribution to curriculum differences"]["delay factor"]) :
     print(RED_BG, results["contribution to curriculum differences"]["delay factor"])
-    print("\n")
+    print(BLACK_BG, "\n")
 
     print(BLACK_BG, "Score in Curriculum 1: $(results["delay factor"]["course 1 score"])\t Score in Curriculum 2: $(results["delay factor"]["course 2 score"])\n")
 
@@ -409,16 +409,21 @@ function pretty_print_delay_factor_results(results::Dict{String,Dict})
 end
 
 function pretty_print_prereq_changes(results::Dict{String,Dict})
-    println("Gained prereqs:")
-    for course in results["prereqs"]["gained prereqs"]
-        print(" $course")
+    if (length(results["prereqs"]["gained prereqs"]) != 0)
+        println("Gained prereqs:")
+        for course in results["prereqs"]["gained prereqs"]
+            print(" $course")
+        end
+        println("")
     end
-    println("")
-    println("Lost prereqs:")
-    for course in results["prereqs"]["lost prereqs"]
-        print(" $course")
+
+    if (length(results["prereqs"]["lost prereqs"]) != 0)
+        println("Lost prereqs:")
+        for course in results["prereqs"]["lost prereqs"]
+            print(" $course")
+        end
+        println("")
     end
-    println("")
 
 end
 
@@ -1164,7 +1169,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
             "delay factor" => runningTally["delay factor"]
         )
     end
-    #pretty_print_curriculum_results(all_results, desired_stat)
-    executive_summary_curriculum(all_results)
+    pretty_print_curriculum_results(all_results, desired_stat)
+    #executive_summary_curriculum(all_results)
     all_results
 end
