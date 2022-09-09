@@ -191,7 +191,7 @@ function pretty_print_centrality_results(results::Dict{String,Dict})
     results["contribution to curriculum differences"]["centrality"] <= 0 ?
     print(GREEN_BG, results["contribution to curriculum differences"]["centrality"]) :
     print(RED_BG, results["contribution to curriculum differences"]["centrality"])
-    print("\n")
+    print(BLACK_BG, "\n")
 
     print(BLACK_BG, "Curriculum 1 score: $(results["centrality"]["course 1 score"])\tCurriculum 2 score: $(results["centrality"]["course 2 score"])\n")
 
