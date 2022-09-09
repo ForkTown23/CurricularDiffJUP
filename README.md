@@ -41,5 +41,5 @@ Todo:
 - [x] Code for new and removed courses (i.e. those with no match)
 - [ ] Think a better solve than ^^ because it's ass (just dump them as unrecognized courses)
 - [x] Include them in the pretty print
-- [ ] Decide on standard for colors...
+- [x] Decide on standard for colors...RED for gain, GREEN for loss... loss is good
 - [ ] New to-JSON print
