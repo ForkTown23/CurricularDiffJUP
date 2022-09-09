@@ -448,7 +448,7 @@ function pretty_print_course_results(results::Dict{String,Dict}, course_name::Ab
 end
 
 function pretty_print_curriculum_results(curriculum_results::Dict{Any,Any}, desired_stat::DesiredStat)
-    for (key, value) in curriculum_results["courses"]
+    for (key, value) in curriculum_results["matched courses"]
         pretty_print_course_results(value, key, desired_stat)
     end
 end
@@ -600,19 +600,61 @@ function executive_summary_course(results::Dict{String,Dict}, course_name::Abstr
     end
 end
 
+function executive_summary_unmatched_course(results::Dict{}, course_name::AbstractString)
+    println("----------------")
+    println("$course_name:")
+    if (results["contribution to curriculum differences"]["centrality"] != 0.0)
+        # if it's a C1-only course, it lost everything
+        results["c1"] ? print(RED_BG("Lost $(results["centrality"]) centrality. ", BLACK_BG("Course doesn't exist in curriculum 2"))) :
+        print(GREEN_BG("Gained $(results["centrality"]) centrality. ", BLACK_BG("Course doesn't exist in curriculum 1")))
+
+        print(BLACK_BG, "\n")
+    end
+    if (results["contribution to curriculum differences"]["blocking factor"] != 0.0)
+        # if it's a C1-only course, it lost everything
+        results["c1"] ? print(RED_BG("Lost $(results["blocking factor"]) blocking factor. ", BLACK_BG("Course doesn't exist in curriculum 2"))) :
+        print(GREEN_BG("Gained $(results["blocking factor"]) blocking factor. ", BLACK_BG("Course doesn't exist in curriculum 1")))
+
+        print(BLACK_BG, "\n")
+    end
+    if (results["contribution to curriculum differences"]["delay factor"] != 0.0)
+        # if it's a C1-only course, it lost everything
+        results["c1"] ? print(RED_BG("Lost $(results["delay factor"]) delay factor. ", BLACK_BG("Course doesn't exist in curriculum 2"))) :
+        print(GREEN_BG("Gained $(results["delay factor"]) delay factor. ", BLACK_BG("Course doesn't exist in curriculum 1")))
+
+        print(BLACK_BG, "\n")
+    end
+
+end
+
 function executive_summary_curriculum(curriculum_results::Dict{Any,Any})
     for (key, value) in curriculum_results["matched courses"]
         if (value["contribution to curriculum differences"]["centrality"] != 0.0 || value["contribution to curriculum differences"]["blocking factor"] != 0.0 || value["contribution to curriculum differences"]["delay factor"] != 0.0)
             executive_summary_course(value, key)
         end
     end
-
+    if (length(curriculum_results["unmatched courses"]) != 0)
+        println("******************")
+        println("Unmatched Courses")
+        for (key, value) in curriculum_results["unmatched courses"]
+            if (value["contribution to curriculum differences"]["centrality"] != 0.0 || value["contribution to curriculum differences"]["blocking factor"] != 0.0 || value["contribution to curriculum differences"]["delay factor"] != 0.0)
+                executive_summary_unmatched_course(value, key)
+            end
+        end
+    end
 end
 
 function course_diff_for_unmatched_course(course::Course, curriculum::Curriculum, c1::Bool)
     results = Dict()
+    contribution = Dict(
+        "complexity" => c1 ? -course.metrics["complexity"] : course.metrics["complexity"],
+        "centrality" => c1 ? -course.metrics["centrality"] : course.metrics["centrality"],
+        "blocking factor" => c1 ? -course.metrics["blocking factor"] : course.metrics["blocking factor"],
+        "delay factor" => c1 ? -course.metrics["delay factor"] : course.metrics["delay factor"]
+    )
 
     results["c1"] = c1
+    results["contribution to curriculum differences"] = contribution
     results["complexity"] = course.metrics["complexity"]
     results["centrality"] = course.metrics["centrality"]
     results["prereqs"] = courses_to_course_names(get_course_prereqs(curriculum, course))
@@ -1069,6 +1111,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
 
         all_results["to explain"] = explain
         all_results["matched courses"] = Dict()
+        all_results["unmatched courses"] = Dict()
         # for each course in curriculum 1, try to find a similarly named course in curriculum 2
         for course in curriculum1.courses
             # this is the catch: MATH 20A and MATH 20A or 10A are not going to match
@@ -1078,7 +1121,12 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
                 # do stuff for courses with no match from c1 to c2
                 # best idea here is to have a special diff for them 
                 # where everything is gained or lost
-                course_diff_for_unmatched_course(course, curriculum1, true)
+                results = course_diff_for_unmatched_course(course, curriculum1, true)
+                contribution = results["contribution to curriculum differences"]
+                for (key, value) in runningTally
+                    runningTally[key] += contribution[key]
+                end
+                all_results["unmatched courses"][course.name] = results
             elseif (length(matching_course) == 1)
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
@@ -1094,6 +1142,21 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
                 println("Something weird here, we have more than one match")
             end
         end
+        for course in curriculum2.courses
+            matching_course = filter(x -> x.name == course.name, curriculum1.courses)
+            if (length(matching_course) == 0)
+                println("No matching course found for $(course.name)")
+                # do stuff for courses with no match to c2 from c2
+                # best idea here is to have a special diff for them 
+                # where everything is gained or lost
+                results = course_diff_for_unmatched_course(course, curriculum2, false)
+                contribution = results["contribution to curriculum differences"]
+                for (key, value) in runningTally
+                    runningTally[key] += contribution[key]
+                end
+                all_results["unmatched courses"][course.name] = results
+            end
+        end
         all_results["explained"] = Dict(
             "complexity" => runningTally["complexity"],
             "centrality" => runningTally["centrality"],
@@ -1101,6 +1164,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
             "delay factor" => runningTally["delay factor"]
         )
     end
-    executive_summary_curriculum(all_results)
+    pretty_print_curriculum_results(all_results, desired_stat)
+    #executive_summary_curriculum(all_results)
     all_results
 end
