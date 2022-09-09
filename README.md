@@ -42,4 +42,5 @@ Todo:
 - [ ] Think a better solve than ^^ because it's ass (just dump them as unrecognized courses)
 - [x] Include them in the pretty print
 - [x] Decide on standard for colors...RED for gain, GREEN for loss... loss is good
+- [ ] Update pretty print
 - [ ] New to-JSON print
