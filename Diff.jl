@@ -609,13 +609,13 @@ function executive_summary_curriculum(curriculum_results::Dict{Any,Any})
 
 end
 
-function course_diff_for_unmatched_course(course::Course, c1::Bool)
+function course_diff_for_unmatched_course(course::Course, curriculum::Curriculum, c1::Bool)
     results = Dict()
 
     results["c1"] = c1
     results["complexity"] = course.metrics["complexity"]
     results["centrality"] = course.metrics["centrality"]
-    results["prereqs"] = course.metrics["prereqs"]
+    results["prereqs"] = courses_to_course_names(get_course_prereqs(curriculum, course))
     results["blocking factor"] = course.metrics["blocking factor"]
     results["delay factor"] = course.metrics["delay factor"]
     results
@@ -1078,7 +1078,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, desir
                 # do stuff for courses with no match from c1 to c2
                 # best idea here is to have a special diff for them 
                 # where everything is gained or lost
-                course_diff_for_unmatched_course(course, true)
+                course_diff_for_unmatched_course(course, curriculum1, true)
             elseif (length(matching_course) == 1)
                 println("Match found for $(course.name)")
                 course2 = matching_course[1]
