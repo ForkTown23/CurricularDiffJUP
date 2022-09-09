@@ -40,5 +40,6 @@ Todo:
 9/9/22cd
 - [x] Code for new and removed courses (i.e. those with no match)
 - [ ] Think a better solve than ^^ because it's ass (just dump them as unrecognized courses)
-- [ ] Include thme in the pretty print
+- [x] Include them in the pretty print
+- [ ] Decide on standard for colors...
 - [ ] New to-JSON print
