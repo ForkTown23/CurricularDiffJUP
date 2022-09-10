@@ -23,7 +23,7 @@ function course_diff_for_unmatched_course(course::Course, curriculum::Curriculum
 end
 
 function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
-    relevant_fields = filter(x ->
+    #=relevant_fields = filter(x ->
             x != :vertex_id &&
                 x != :cross_listed &&
                 x != :requisites &&
@@ -44,7 +44,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
             println("❌Course 1 has $(field): $field1 and Course 2 has $(field): $field2")
         end
     end
-
+    =#
     contribution = Dict(
         "complexity" => 0.0,
         "centrality" => 0.0,
@@ -58,11 +58,11 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_complexity["course 1 score"] = course1.metrics["complexity"]
     explanations_complexity["course 2 score"] = course2.metrics["complexity"]
     if (course1.metrics["complexity"] == course2.metrics["complexity"])
-        if (verbose)
+        #=if (verbose)
             println("✅Course 1 and Course 2 have the same complexity: $(course1.metrics["complexity"])")
-        end
+        end=#
     else
-        println("❌Course 1 has complexity $(course1.metrics["complexity"]) and Course 2 has complexity $(course2.metrics["complexity"])")
+        #println("❌Course 1 has complexity $(course1.metrics["complexity"]) and Course 2 has complexity $(course2.metrics["complexity"])")
         contribution["complexity"] = (course2.metrics["complexity"] - course1.metrics["complexity"])
     end
     # centrality
@@ -70,11 +70,11 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_centrality["course 1 score"] = course1.metrics["centrality"]
     explanations_centrality["course 2 score"] = course2.metrics["centrality"]
     if (course1.metrics["centrality"] == course2.metrics["centrality"])
-        if (verbose)
+        #=if (verbose)
             println("✅Course 1 and Course 2 have the same centrality: $(course1.metrics["centrality"])")
-        end
+        end=#
     else
-        println("❌Course 1 has centrality $(course1.metrics["centrality"]) and Course 2 has centrality $(course2.metrics["centrality"])")
+        #println("❌Course 1 has centrality $(course1.metrics["centrality"]) and Course 2 has centrality $(course2.metrics["centrality"])")
         contribution["centrality"] = (course2.metrics["centrality"] - course1.metrics["centrality"])
 
         # run the investigator and then compare
@@ -179,11 +179,11 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_blockingfactor["course 1 score"] = course1.metrics["blocking factor"]
     explanations_blockingfactor["course 2 score"] = course2.metrics["blocking factor"]
     if (course1.metrics["blocking factor"] == course2.metrics["blocking factor"])
-        if (verbose)
+        #=if (verbose)
             println("✅Course 1 and Course 2 have the same blocking factor: $(course1.metrics["blocking factor"])")
-        end
+        end=#
     else
-        println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
+        #println("❌Course 1 has blocking factor $(course1.metrics["blocking factor"]) and Course 2 has blocking factor $(course2.metrics["blocking factor"])")
         contribution["blocking factor"] = (course2.metrics["blocking factor"] - course1.metrics["blocking factor"])
 
         # since they have different blocking factors, investigate why and get a set of blocking factors
@@ -286,11 +286,11 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_delayfactor["course 1 score"] = course1.metrics["delay factor"]
     explanations_delayfactor["course 2 score"] = course2.metrics["delay factor"]
     if (course1.metrics["delay factor"] == course2.metrics["delay factor"])
-        if (verbose)
+        #=if (verbose)
             println("✅Course 1 and Course 2 have the same delay factor: $(course1.metrics["delay factor"])")
-        end
+        end=#
     else
-        println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
+        #println("❌Course 1 has delay factor $(course1.metrics["delay factor"]) and Course 2 has delay factor $(course2.metrics["delay factor"])")
         contribution["delay factor"] = (course2.metrics["delay factor"] - course1.metrics["delay factor"])
         df_path_course_1 = courses_to_course_names(delay_factor_investigator(course1, curriculum1))
         df_path_course_2 = courses_to_course_names(delay_factor_investigator(course2, curriculum2))
@@ -347,7 +347,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
 end
 
 function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
-    # using fieldnames instead of explicit names
+    #= using fieldnames instead of explicit names
     relevant_fields = filter(x ->
             x != :courses &&
                 x != :graph &&
@@ -369,6 +369,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             println("❌Curriculum 1 has $(field): $field1 and Curriculum 2 has $(field): $field2")
         end
     end
+    =#
 
     # compare metrics
     try
@@ -452,7 +453,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
 
     # if the stats don't match up or we asked for a deep dive, take a deep dive!
     if (!metrics_same || verbose)
-        println("Taking a look at courses")
+        #println("Taking a look at courses")
         # make the initial changes array, i.e. what we're trying to explain
         explain = Dict(
             "complexity" => curriculum2.metrics["complexity"][1] - curriculum1.metrics["complexity"][1],
@@ -476,7 +477,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             # this is the catch: MATH 20A and MATH 20A or 10A are not going to match
             matching_course = filter(x -> x.name == course.name, curriculum2.courses)
             if (length(matching_course) == 0)
-                println("No matching course found for $(course.name)")
+                #println("No matching course found for $(course.name)")
                 # do stuff for courses with no match from c1 to c2
                 # best idea here is to have a special diff for them 
                 # where everything is gained or lost
@@ -487,7 +488,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
                 end
                 all_results["unmatched courses"][course.name] = results
             elseif (length(matching_course) == 1)
-                println("Match found for $(course.name)")
+                #println("Match found for $(course.name)")
                 course2 = matching_course[1]
                 results = course_diff(course, course2, curriculum1, curriculum2, verbose)
                 contribution = results["contribution to curriculum differences"]
@@ -496,7 +497,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
                 end
                 all_results["matched courses"][course.name] = results
                 # TODO: handle small bug in runningTally only containing the end results and no intermediate values
-                println("explained so far: $(runningTally["complexity"]), $(runningTally["centrality"]), $(runningTally["blocking factor"]), $(runningTally["delay factor"])")
+                #println("explained so far: $(runningTally["complexity"]), $(runningTally["centrality"]), $(runningTally["blocking factor"]), $(runningTally["delay factor"])")
             else
                 println("Something weird here, we have more than one match")
             end
@@ -504,7 +505,7 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
         for course in curriculum2.courses
             matching_course = filter(x -> x.name == course.name, curriculum1.courses)
             if (length(matching_course) == 0)
-                println("No matching course found for $(course.name)")
+                #println("No matching course found for $(course.name)")
                 # do stuff for courses with no match to c2 from c2
                 # best idea here is to have a special diff for them 
                 # where everything is gained or lost
