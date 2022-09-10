@@ -192,6 +192,7 @@ function executive_summary_curriculum(curriculum_results::Dict{Any,Any})
     end
 end
 
+# pretty print section
 function pretty_print_centrality_results(results::Dict{String,Dict})
     # CENTRALITY -----------------------------------------------------------------------
     print("Centrality: ")
