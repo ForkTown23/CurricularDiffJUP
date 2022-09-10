@@ -37,10 +37,16 @@ Todo:
 9/8/22:
 - [x] Executive Summary
 
-9/9/22cd
+9/9/22:
 - [x] Code for new and removed courses (i.e. those with no match)
 - [ ] Think a better solve than ^^ because it's ass (just dump them as unrecognized courses)
 - [x] Include them in the pretty print
 - [x] Decide on standard for colors...RED for gain, GREEN for loss... loss is good
-- [ ] Update pretty print to include unmatched courses
-- [ ] New to-JSON print
+- [x] Update pretty print to include unmatched courses
+- [x] Removed "excess" print statements
+- [x] New to-JSON print (there's a function for that no need to do anything special)
+
+10/9/22:
+- [ ] Fix the title on some of the pretty print output
+- [ ] Consider a "verbose" detective that finds possible cases where things have changed but balanced out
+- [ ] Script for massive production
