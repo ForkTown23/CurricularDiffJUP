@@ -64,8 +64,8 @@ for major in keys(all_plans)
         println(college)
         if (length(all_plans[major][college]) > 1)
             for year in keys(all_plans[major][college])
-                println(year)
-                if (year < current_year)
+                println("$major, $college, $year")
+                if (year < last(collect(keys(all_plans[major][college]))))
                     results[major][college]["$year to $(year+1)"] = curricular_diff(all_plans[major][college][year], all_plans[major][college][year+1], false)
                 end
             end
