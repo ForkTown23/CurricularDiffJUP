@@ -14,7 +14,8 @@ function get_course_prereqs(curriculum::Curriculum, course::Course)
     course_prereqs = Vector{Course}()
     for (key, value) in course.requisites
         # get the course name
-        course = curriculum.courses[key]
+        #course = curriculum.courses[key]
+        course = course_from_id(curriculum, key)
         push!(course_prereqs, course)
     end
     course_prereqs

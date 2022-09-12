@@ -1,7 +1,7 @@
 include("./Diff.jl")
 @enum DesiredStat ALL CEN COM BLO DEL PRE
 
-function executive_summary_course(results::Dict{String,Dict}, course_name::AbstractString)
+function executive_summary_course(results::Dict{String,Any}, course_name::AbstractString)
     println("----------------")
     println("$course_name:")
     if (results["contribution to curriculum differences"]["centrality"] != 0.0)
@@ -193,7 +193,7 @@ function executive_summary_curriculum(curriculum_results::Dict{Any,Any})
 end
 
 # pretty print section
-function pretty_print_centrality_results(results::Dict{String,Dict})
+function pretty_print_centrality_results(results::Dict{String,Any})
     # CENTRALITY -----------------------------------------------------------------------
     print("Centrality: ")
     # highlight the centrality change: if its negative, that's good, so green. Else red
@@ -269,7 +269,7 @@ function pretty_print_centrality_results(results::Dict{String,Dict})
     end
 end
 
-function pretty_print_complexity_results(results::Dict{String,Dict})
+function pretty_print_complexity_results(results::Dict{String,Any})
     print("Complexity: ")
     results["contribution to curriculum differences"]["complexity"] <= 0 ?
     print(GREEN_BG, results["contribution to curriculum differences"]["complexity"]) :
@@ -283,7 +283,7 @@ function pretty_print_complexity_results(results::Dict{String,Dict})
     pretty_print_delay_factor_results(results)
 end
 
-function pretty_print_blocking_factor_results(results::Dict{String,Dict})
+function pretty_print_blocking_factor_results(results::Dict{String,Any})
     # Print the blocking factor results
     print("Blocking Factor: ")
     results["contribution to curriculum differences"]["blocking factor"] <= 0 ?
@@ -373,7 +373,7 @@ function pretty_print_blocking_factor_results(results::Dict{String,Dict})
     end
 end
 
-function pretty_print_delay_factor_results(results::Dict{String,Dict})
+function pretty_print_delay_factor_results(results::Dict{String,Any})
     # Delay factor 
     print("Delay Factor: ")
     results["contribution to curriculum differences"]["delay factor"] <= 0 ?
@@ -417,7 +417,7 @@ function pretty_print_delay_factor_results(results::Dict{String,Dict})
     end
 end
 
-function pretty_print_prereq_changes(results::Dict{String,Dict})
+function pretty_print_prereq_changes(results::Dict{String,Any})
     if (length(results["prereqs"]["gained prereqs"]) != 0)
         println("Gained prereqs:")
         for course in results["prereqs"]["gained prereqs"]
@@ -436,7 +436,7 @@ function pretty_print_prereq_changes(results::Dict{String,Dict})
 
 end
 
-function pretty_print_course_results(results::Dict{String,Dict}, course_name::AbstractString, desired_stat::DesiredStat)
+function pretty_print_course_results(results::Dict{String,Any}, course_name::AbstractString, desired_stat::DesiredStat)
     # this should pretty print results
 
     # separator
