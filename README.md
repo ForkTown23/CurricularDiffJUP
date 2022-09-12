@@ -48,5 +48,6 @@ Todo:
 
 12/9/22:
 - [x] Fix the title on some of the pretty print output
+- [x] Added C1 and C2 name field to output
 - [ ] Consider a "verbose" detective that finds possible cases where things have changed but balanced out
 - [ ] Script for massive production

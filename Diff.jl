@@ -337,6 +337,8 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_prereqs["gained prereqs"] = collect(gained_prereqs)
 
     Dict(
+        "c1 name" => curriculum1.name,
+        "c2 name" => curriculum2.name,
         "contribution to curriculum differences" => contribution,
         "complexity" => explanations_complexity,
         "centrality" => explanations_centrality,
