@@ -1,5 +1,5 @@
 # include the output from somewhere. This is my case. Don't replicate
-include("./../../Basic CA Stats/My fork of Sean's Stats/ExploratoryCurricularAnalytics/Output.jl")
+include("./../../Basic CA Stats/Sean's Stats/ExploratoryCurricularAnalytics/Output.jl")
 include("./Diff.jl")
 using DataStructures
 current_year = 2022
@@ -58,10 +58,13 @@ end
 results = Dict()
 for major in keys(all_plans)
     results[major] = Dict()
+    println(major)
     for college in keys(all_plans[major])
         results[major][college] = Dict()
+        println(college)
         if (length(all_plans[major][college]) > 1)
             for year in keys(all_plans[major][college])
+                println(year)
                 if (year < current_year)
                     results[major][college]["$year to $(year+1)"] = curricular_diff(all_plans[major][college][year], all_plans[major][college][year+1], false)
                 end

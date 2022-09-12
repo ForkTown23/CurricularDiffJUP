@@ -501,7 +501,15 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
                 # TODO: handle small bug in runningTally only containing the end results and no intermediate values
                 #println("explained so far: $(runningTally["complexity"]), $(runningTally["centrality"]), $(runningTally["blocking factor"]), $(runningTally["delay factor"])")
             else
-                println("Something weird here, we have more than one match for $course")
+                println("Something weird here, we have more than one match for $(course.name)")
+                # A choice... FOR NOW
+                course2 = matching_course[1]
+                results = course_diff(course, course2, curriculum1, curriculum2, verbose)
+                contribution = results["contribution to curriculum differences"]
+                for (key, value) in runningTally
+                    runningTally[key] += contribution[key]
+                end
+                all_results["matched courses"][course.name] = results
             end
         end
         for course in curriculum2.courses
