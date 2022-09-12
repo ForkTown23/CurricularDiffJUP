@@ -46,7 +46,7 @@ Todo:
 - [x] Removed "excess" print statements
 - [x] New to-JSON print (there's a function for that no need to do anything special)
 
-10/9/22:
-- [ ] Fix the title on some of the pretty print output
+12/9/22:
+- [x] Fix the title on some of the pretty print output
 - [ ] Consider a "verbose" detective that finds possible cases where things have changed but balanced out
 - [ ] Script for massive production

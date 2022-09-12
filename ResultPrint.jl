@@ -210,7 +210,7 @@ function pretty_print_centrality_results(results::Dict{String,Dict})
             pretty_print_course_names(path)
         end
 
-        print("Courses in \"not in Curriculum 2 Paths\": (WORKING TITLE-ONLY INCLUDING THE ONES WITH CHANGES HERE)\n")
+        print("Courses in lost paths that have changed:\n")
         for (key, value) in results["centrality"]["courses not in c2 paths"]
             if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
                 print("$key: ")
@@ -242,7 +242,7 @@ function pretty_print_centrality_results(results::Dict{String,Dict})
             pretty_print_course_names(path)
         end
 
-        print("Courses in \"not in Curriculum 1 Paths\": (WORKING TITLE-ONLY INCLUDING THE ONES WITH CHANGES HERE)\n")
+        print("Courses in gained paths that have changed: \n")
         for (key, value) in results["centrality"]["courses not in c1 paths"]
             if (length(value["gained prereqs"]) != 0 || length(value["lost prereqs"]) != 0)
                 print("$key: ")
