@@ -22,7 +22,7 @@ function course_diff_for_unmatched_course(course::Course, curriculum::Curriculum
     results
 end
 
-function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
+function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, curriculum2::Curriculum, deep_dive::Bool=true)
     #=relevant_fields = filter(x ->
             x != :vertex_id &&
                 x != :cross_listed &&
@@ -69,7 +69,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_centrality = Dict()
     explanations_centrality["course 1 score"] = course1.metrics["centrality"]
     explanations_centrality["course 2 score"] = course2.metrics["centrality"]
-    if (course1.metrics["centrality"] == course2.metrics["centrality"])
+    if (course1.metrics["centrality"] == course2.metrics["centrality"] && !deep_dive)
         #=if (verbose)
             println("✅Course 1 and Course 2 have the same centrality: $(course1.metrics["centrality"])")
         end=#
@@ -178,7 +178,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_blockingfactor = Dict()
     explanations_blockingfactor["course 1 score"] = course1.metrics["blocking factor"]
     explanations_blockingfactor["course 2 score"] = course2.metrics["blocking factor"]
-    if (course1.metrics["blocking factor"] == course2.metrics["blocking factor"])
+    if (course1.metrics["blocking factor"] == course2.metrics["blocking factor"] && !deep_dive)
         #=if (verbose)
             println("✅Course 1 and Course 2 have the same blocking factor: $(course1.metrics["blocking factor"])")
         end=#
@@ -289,7 +289,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     explanations_delayfactor = Dict()
     explanations_delayfactor["course 1 score"] = course1.metrics["delay factor"]
     explanations_delayfactor["course 2 score"] = course2.metrics["delay factor"]
-    if (course1.metrics["delay factor"] == course2.metrics["delay factor"])
+    if (course1.metrics["delay factor"] == course2.metrics["delay factor"] && !deep_dive)
         #=if (verbose)
             println("✅Course 1 and Course 2 have the same delay factor: $(course1.metrics["delay factor"])")
         end=#
