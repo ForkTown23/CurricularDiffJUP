@@ -1,7 +1,7 @@
 # include the output from somewhere. This is my case. Don't replicate
 #include("./../../Basic CA Stats/Sean's Stats/ExploratoryCurricularAnalytics/Output.jl")
 include("./Diff.jl")
-using DataStructures, CurricularAnalytics
+using DataStructures, CurricularAnalytics, JSON
 
 colleges = ["FI", "MU", "RE", "SI", "SN", "TH", "WA"]
 #apparently there's no UNPSRE2017 plan, oh well
@@ -143,3 +143,6 @@ for major in all_majors
     end
 end
 
+open("./results_pretty.json", "w") do f
+    JSON.print(f, results, 4)
+end
