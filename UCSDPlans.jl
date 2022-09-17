@@ -1,8 +1,12 @@
 # include the output from somewhere. This is my case. Don't replicate
-include("./../../Basic CA Stats/Sean's Stats/ExploratoryCurricularAnalytics/Output.jl")
+#include("./../../Basic CA Stats/Sean's Stats/ExploratoryCurricularAnalytics/Output.jl")
 include("./Diff.jl")
-using DataStructures
-current_year = 2022
+using DataStructures, CurricularAnalytics
+
+colleges = ["FI", "MU", "RE", "SI", "SN", "TH", "WA"]
+#apparently there's no UNPSRE2017 plan, oh well
+#exceptions = ["UNPSRE2017", "UNHARE2017", "PS30TH2016", "CH37FI2016", "UN27RE2017", "UNSSRE2016"]
+exceptions = []
 
 # "borrowed" from Utils.jl in Sean's fork of ExploratoryCA
 function convert_to_curriculum(plan::DegreePlan)
@@ -13,6 +17,7 @@ function convert_to_curriculum(plan::DegreePlan)
     c
 end
 
+#= This is the output.jl version but that has certain issues so we'll use read_csv
 all_plans = Dict()
 # First, reformat the Output from year -> major -> college into major -> college -> year
 # Get all the possible majors
@@ -51,11 +56,12 @@ for year in 2015:2050
         end
     end
 end
+=#
 
 # OK, so now you're here, holding a massive amount of data in memory like a champ
 # Now loop through each non-empty plan and run the diffs 
 
-results = Dict()
+#=results = Dict()
 for major in keys(all_plans)
     results[major] = Dict()
     println(major)
@@ -65,10 +71,75 @@ for major in keys(all_plans)
         if (length(all_plans[major][college]) > 1)
             for year in keys(all_plans[major][college])
                 println("$major, $college, $year")
-                if (year < last(collect(keys(all_plans[major][college]))))
-                    results[major][college]["$year to $(year+1)"] = curricular_diff(all_plans[major][college][year], all_plans[major][college][year+1], false)
+                if !("$major$college$year" in exceptions || "$major$college$(year+1)" in exceptions)
+                    if (year < last(collect(keys(all_plans[major][college]))))
+                        results[major][college]["$year to $(year+1)"] = curricular_diff(all_plans[major][college][year], all_plans[major][college][year+1], false)
+                    end
                 end
             end
         end
     end
 end
+=#
+
+# First, find all majors, i.e. all the folders in the output$year folders in ./files/massive
+all_majors = []
+items = [item for item in walkdir("./files/massive/")]
+index = 2 # magic number
+while index < length(items)
+    global all_majors = union(all_majors, items[index][2])
+    global index = index + length(items[index][2]) + 1
+end
+all_plans = Dict()
+exceptions = []
+for major in all_majors
+    println(major)
+    all_plans[major] = Dict()
+    for college in colleges
+        println(college)
+        all_plans[major][college] = []
+        for year in 2015:2022
+            #=if (college == "SN" && year < 2020)
+                continue
+            end
+            try
+                all_plans[major][college][year] = read_csv("./files/massive/output$(year)/$(major)/$(college).csv")
+                println(year)
+            catch err
+                if (isa(err, SystemError))
+                    push!(exceptions, "$major$college$year")
+                end
+            end=#
+            if (college == "SN" && year < 2020)
+                continue
+            end
+            if isfile("./files/massive/output$(year)/$(major)/$(college).csv") &&
+               isfile("./files/massive/output$(year+1)/$(major)/$(college).csv")
+
+                push!(all_plans[major][college], year)
+                println(year)
+            else
+                if year != 2022
+                    push!(exceptions, "$(major)$(college)$(year)")
+                end
+            end
+        end
+    end
+end
+
+results = Dict()
+for major in all_majors
+    results[major] = Dict()
+    println("***********************$major*************************")
+    for (college, years) in all_plans[major]
+        results[major][college] = Dict()
+        for year in years
+            dp1 = read_csv("./files/massive/output$(year)/$(major)/$(college).csv")
+            dp2 = read_csv("./files/massive/output$(year+1)/$(major)/$(college).csv")
+            dp1.curriculum.name = "$(major)$(college)$(year)"
+            dp2.curriculum.name = "$(major)$(college)$(year+1)"
+            results[major][college]["$year to $(year+1)"] = curricular_diff(dp1.curriculum, dp2.curriculum, false)
+        end
+    end
+end
+
