@@ -29,7 +29,7 @@ function course_from_name(curriculum::Curriculum, course_name::AbstractString)
     end
 end
 
-function pretty_print_course_names(courses::Vector{AbstractString})
+function pretty_print_course_names(courses::Vector{})
     for course in courses
         print(BLACK_BG, "$(course)➡️")
     end
