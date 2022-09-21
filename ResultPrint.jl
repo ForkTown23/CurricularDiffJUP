@@ -175,7 +175,7 @@ function executive_summary_unmatched_course(results::Dict{}, course_name::Abstra
 
 end
 
-function executive_summary_curriculum(curriculum_results::Dict{Any,Any})
+function executive_summary_curriculum(curriculum_results::Dict{})
     for (key, value) in curriculum_results["matched courses"]
         if (value["contribution to curriculum differences"]["centrality"] != 0.0 || value["contribution to curriculum differences"]["blocking factor"] != 0.0 || value["contribution to curriculum differences"]["delay factor"] != 0.0)
             executive_summary_course(value, key)
@@ -461,7 +461,7 @@ function pretty_print_course_results(results::Dict{String,Any}, course_name::Abs
     end
 end
 
-function pretty_print_curriculum_results(curriculum_results::Dict{Any,Any}, desired_stat::DesiredStat)
+function pretty_print_curriculum_results(curriculum_results::Dict{}, desired_stat::DesiredStat)
     for (key, value) in curriculum_results["matched courses"]
         pretty_print_course_results(value, key, desired_stat)
     end
