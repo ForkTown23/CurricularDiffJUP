@@ -143,6 +143,10 @@ for major in all_majors
     end
 end
 
+open("./results.json", "w") do f
+    JSON.print(f, results)
+end
+
 open("./results_pretty.json", "w") do f
     JSON.print(f, results, 4)
 end
