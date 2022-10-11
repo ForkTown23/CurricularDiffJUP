@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Website</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" href="data:,">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!--<script src="./index.js" defer></script>-->
+  </head>
+  <body>
+    <main>
+        <h1>Welcome to My Website</h1>  
+        <p id="JSON"></p>
+        <table>
+          <tr>
+            <th>Major</th>
+            <th>ERC</th>
+            <th>TH</th>
+            <th>WA</th>
+            <th>SI</th>
+            <th>SE</th>
+            <th>RE</th>
+            <th>MU</th>
+          </tr>
+        </table>
+        <script>
+          $(document).ready(function(){
+            $.getJSON("./../results.json", function(data) {
+              console.log("doing")
+              document.getElementById("JSON").innerText = Object.keys(data).sort()//JSON.stringify(data, undefined, 2)
+              console.log(JSON.stringify(data, undefined, 2))
+            })
+          })
+          console.log("HELLO")
+        </script>
+    </main>
+  </body>
+</html>
