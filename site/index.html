@@ -14,7 +14,7 @@
     <main>
         <h1>Welcome to My Website</h1>  
         <p id="JSON"></p>
-        <table>
+        <table id="Link-Table">
           <tr>
             <th>Major</th>
             <th>ERC</th>
@@ -31,10 +31,22 @@
             $.getJSON("./../results.json", function(data) {
               console.log("doing")
               document.getElementById("JSON").innerText = Object.keys(data).sort()//JSON.stringify(data, undefined, 2)
-              console.log(JSON.stringify(data, undefined, 2))
+              console.log(Object.keys(data).sort())
+
+              Object.keys(data).sort().forEach((element,index)=>populate_row(element,Object.keys(data).sort()[index]))
+
             })
           })
-          
+
+          function populate_row(obj, name){
+            let row = document.createElement('tr')
+            let major_name = document.createElement('td')
+            let major_name_text = document.createTextNode(name)
+            major_name.appendChild(major_name_text)
+            row.appendChild(major_name)
+            document.getElementById("Link-Table").appendChild(row)
+          }
+
           console.log("HELLO")
         </script>
     </main>
