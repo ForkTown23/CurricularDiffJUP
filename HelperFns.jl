@@ -73,7 +73,7 @@ function pretty_print_course_names(courses::Vector{})
     print(BLACK_BG, " \n")
 end
 
-function courses_to_course_names(courses::Vector{AbstractCourse})
+function courses_to_course_names(courses::Vector{})
     course_names = AbstractString[]
     for course in courses
         push!(course_names, course.name)
