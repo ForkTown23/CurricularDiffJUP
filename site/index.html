@@ -14,7 +14,7 @@
     <main>
         <h1>Welcome to My Website</h1>  
         <p id="JSON"></p>
-        <table id="Link-Table">
+        <div id="Table" style="float:left;"><table id="Link-Table">
           <tr>
             <th>Major</th>
             <th>ERC</th>
@@ -26,6 +26,10 @@
             <th>MU</th>
           </tr>
         </table>
+        </div>
+        <div id="Diffs">
+          <p>Stuff</p>
+        </div>
         <script>
           $(document).ready(function(){
             $.getJSON("./../results.json", function(data) {
@@ -33,7 +37,7 @@
               document.getElementById("JSON").innerText = Object.keys(data).sort()//JSON.stringify(data, undefined, 2)
               console.log(Object.keys(data).sort())
 
-              Object.keys(data).sort().forEach((element,index)=>populate_row(element,Object.keys(data).sort()[index]))
+              Object.keys(data).sort().forEach((element)=>populate_row(data[element],element))
 
             })
           })
@@ -44,10 +48,61 @@
             let major_name_text = document.createTextNode(name)
             major_name.appendChild(major_name_text)
             row.appendChild(major_name)
+
+            // get each set of changes per college
+            let colleges = Object.keys(obj)
+            console.log(typeof obj)
+            colleges.includes("FI") && Object.keys(obj["FI"]).length > 0 ? add_link(row,obj["FI"],"FI",name) : add_empty(row)
+            colleges.includes("TH") && Object.keys(obj["TH"]).length > 0 ? add_link(row,obj["TH"],"TH",name) : add_empty(row)
+            colleges.includes("WA") && Object.keys(obj["WA"]).length > 0 ? add_link(row,obj["WA"],"WA",name) : add_empty(row)
+            colleges.includes("SI") && Object.keys(obj["SI"]).length > 0 ? add_link(row,obj["SI"],"SI",name) : add_empty(row)
+            colleges.includes("SN") && Object.keys(obj["SN"]).length > 0 ? add_link(row,obj["SN"],"SN",name) : add_empty(row)
+            colleges.includes("RE") && Object.keys(obj["RE"]).length > 0 ? add_link(row,obj["RE"],"RE",name) : add_empty(row)
+            colleges.includes("MU") && Object.keys(obj["MU"]).length > 0 ? add_link(row,obj["MU"],"FI",name) : add_empty(row)
             document.getElementById("Link-Table").appendChild(row)
           }
 
           console.log("HELLO")
+
+          function add_link(row, college_data,college_name,major_name){
+            let link = document.createElement('td')
+            let link_btn = document.createElement('btn')
+            link_btn.innerText = "View"
+            link_btn.addEventListener("click", function(){
+              dataDisplay(college_data,college_name,major_name)
+            })
+            //let link_text = document.createTextNode("View")
+            link.appendChild(link_btn)
+            row.appendChild(link)
+          }
+
+          function add_empty(row){
+            let link = document.createElement('td')
+            let link_text = document.createTextNode("N/A")
+            link.appendChild(link_text)
+            row.appendChild(link)
+          }
+
+          function dataDisplay(data,college,major){
+            let diff_div = document.getElementById("Diffs")
+            while (diff_div.firstChild) {
+              diff_div.removeChild(diff_div.lastChild);
+            }
+            console.log(data)
+            title = document.createElement('h1')
+            title.innerText = `${major}'s differences in ${college}`
+            text = document.createElement('p')
+            text.innerText = JSON.stringify(data)
+            diff_div.appendChild(title)
+
+            // now, actually spit out the results
+            for (const property in data){
+              year = document.createElement('h2')
+              year.innerText = property
+              diff_div.appendChild(year)
+              console.log(property)
+            }
+          }
         </script>
     </main>
   </body>
