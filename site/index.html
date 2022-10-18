@@ -485,13 +485,31 @@
               console.log(course)
               console.log(results["contribution to curriculum differences"]["centrality"])
               if (results["contribution to curriculum differences"]["centrality"] != 0){
+                // holds the whole set
                 centr_div = document.createElement('div')
                 centr_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-centr`)
+                
+                // build header stuff
+                centr_header_div = document.createElement('div')
+                centr_header_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-centr-header`)
                 centr_header = document.createElement('h5')
                 centr_header.innerText = "Centrality Factor:"
-                
+                centr_header_btn = document.createElement('button')
+                centr_header_btn.innerText = "Expand"
+
+                // build content
                 centr_content_div = display_centr(year,course,results)
-                centr_div.appendChild(centr_header)
+
+                // Hook up button to centr_content
+                centr_header_btn.addEventListener("click", function(){
+                  drop_down_click(centr_content_div.getAttribute('class'))
+                })
+
+                // hook up header stuff to header div
+                centr_header_div.appendChild(centr_header)
+                centr_header_div.appendChild(centr_header_btn)
+                
+                centr_div.appendChild(centr_header_div)
                 centr_div.appendChild(centr_content_div)
                 course_name.appendChild(centr_div)
               }
