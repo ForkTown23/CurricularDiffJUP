@@ -138,9 +138,13 @@ for major in all_majors
             dp2 = read_csv("./files/massive/output$(year+1)/$(major)/$(college).csv")
             dp1.curriculum.name = "$(major)$(college)$(year)"
             dp2.curriculum.name = "$(major)$(college)$(year+1)"
-            results[major][college]["$year to $(year+1)"] = curricular_diff(dp1.curriculum, dp2.curriculum, true)
+            results[major][college]["$year to $(year+1)"] = curricular_diff(dp1.curriculum, dp2.curriculum, true, true, "./files/redundant_names_tiny.csv")
         end
     end
+end
+
+open("./results.json", "w") do f
+    JSON.print(f, results)
 end
 
 open("./results_pretty.json", "w") do f

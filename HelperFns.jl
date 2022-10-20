@@ -1,4 +1,41 @@
-using CurricularAnalytics
+using CurricularAnalytics, CSV
+
+function course_match(course1_name::AbstractString, course2_name::AbstractString, all_redundants::Matrix)
+    if (course1_name == course2_name)
+        return (true, course1_name, course2_name)
+    else
+        course_one = findall(x -> (!ismissing(x) && x == course1_name), all_redundants)
+        course_two = findall(x -> (!ismissing(x) && x == course2_name), all_redundants)
+        if (isempty(course_one) || isempty(course_two))
+            return (false, course1_name, course2_name)
+        else
+            if (course_one[1][1] == course_two[1][1]) # Same row!
+                return (true, first(all_redundants[course_one]), first(all_redundants[course_two]))
+            else
+                return (false, course1_name, course2_name)
+            end
+        end
+    end
+end
+
+function course_find(course_name::AbstractString, alternate_names::Matrix, target_curriculum::Curriculum)
+    ret = (false, course_name, course_name)
+    # find row that course_name is on
+    index = findall(x -> (!ismissing(x) && x == course_name), alternate_names)
+    if (!isempty(index)) # i.e., it's in the fun table of weird names
+        # get the row that this is on:
+        row = index[1][1]
+        row_vec = alternate_names[row, :]
+        # loop through the equivalent names in the same row and try to match them
+        for alt_name in row_vec
+            if !ismissing(alt_name) && alt_name in courses_to_course_names(target_curriculum.courses)
+                ret = (true, course_name, alt_name)
+                break
+            end
+        end
+    end
+    ret
+end
 
 function prereq_print(prereqs::Set{AbstractString})
     string = " "
@@ -36,7 +73,7 @@ function pretty_print_course_names(courses::Vector{})
     print(BLACK_BG, " \n")
 end
 
-function courses_to_course_names(courses::Vector{Course})
+function courses_to_course_names(courses::Vector{})
     course_names = AbstractString[]
     for course in courses
         push!(course_names, course.name)

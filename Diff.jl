@@ -1,4 +1,4 @@
-using CurricularAnalytics, Crayons.Box
+using CurricularAnalytics, Crayons.Box, CSV
 include("./HelperFns.jl")
 
 # all, centrality, complexity, blocking, delay, prereq
@@ -352,7 +352,7 @@ function course_diff(course1::Course, course2::Course, curriculum1::Curriculum, 
     )
 end
 
-function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true)
+function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbose::Bool=true, redundants::Bool=false, redundants_file::String="")
     #= using fieldnames instead of explicit names
     relevant_fields = filter(x ->
             x != :courses &&
@@ -376,7 +376,11 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
         end
     end
     =#
-
+    redundant_course_names = []
+    if (redundants)
+        names = CSV.read(redundants_file)
+        redundant_course_names = Matrix(names)
+    end
     # compare metrics
     try
         basic_metrics(curriculum1)
@@ -483,16 +487,40 @@ function curricular_diff(curriculum1::Curriculum, curriculum2::Curriculum, verbo
             # this is the catch: MATH 20A and MATH 20A or 10A are not going to match
             matching_course = filter(x -> x.name == course.name, curriculum2.courses)
             if (length(matching_course) == 0)
-                #println("No matching course found for $(course.name)")
-                # do stuff for courses with no match from c1 to c2
-                # best idea here is to have a special diff for them 
-                # where everything is gained or lost
-                results = course_diff_for_unmatched_course(course, curriculum1, true)
-                contribution = results["contribution to curriculum differences"]
-                for (key, value) in runningTally
-                    runningTally[key] += contribution[key]
+                if (redundants)
+                    # try one more time with the course_find method
+                    (found, course1_name, course2_name) = course_find(course.name, redundant_course_names, curriculum2)
+                    if (found)
+                        results = course_diff(course, course_from_name(curriculum2, course2_name), curriculum1, curriculum2, verbose)
+                        contribution = results["contribution to curriculum differences"]
+                        for (key, value) in runningTally
+                            runningTally[key] += contribution[key]
+                        end
+                        all_results["matched courses"][course.name] = results
+                    else
+                        # println("No matching course found for $(course.name)")
+                        # do stuff for courses with no match from c1 to c2
+                        # best idea here is to have a special diff for them 
+                        # where everything is gained or lost
+                        results = course_diff_for_unmatched_course(course, curriculum1, true)
+                        contribution = results["contribution to curriculum differences"]
+                        for (key, value) in runningTally
+                            runningTally[key] += contribution[key]
+                        end
+                        all_results["unmatched courses"][course.name] = results
+                    end
+                else
+                    # println("No matching course found for $(course.name)")
+                    # do stuff for courses with no match from c1 to c2
+                    # best idea here is to have a special diff for them 
+                    # where everything is gained or lost
+                    results = course_diff_for_unmatched_course(course, curriculum1, true)
+                    contribution = results["contribution to curriculum differences"]
+                    for (key, value) in runningTally
+                        runningTally[key] += contribution[key]
+                    end
+                    all_results["unmatched courses"][course.name] = results
                 end
-                all_results["unmatched courses"][course.name] = results
             elseif (length(matching_course) == 1)
                 #println("Match found for $(course.name)")
                 course2 = matching_course[1]
