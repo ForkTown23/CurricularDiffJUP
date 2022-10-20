@@ -7,9 +7,9 @@
     <title>My Website</title>
     <style>
       .float-container {border: 3px solid #fff; padding:20px;}
-      .float-child {width:40%;float:left;padding:20px}
-      h4 {border-style: solid none solid none;font-size:large;}
-      h5 {border-style: none none dotted none;font-size:large;}
+      .float-child {width:30%;float:left;padding:20px}
+      h4 {display:inline;font-size:large;}
+      h5 {display:inline;font-size:large;}
       .matched-course {display:none;}
       .drop-down {display:block; width:100%}
     </style>
@@ -55,6 +55,17 @@
 
             })
           })
+
+          // "borrowed" from stack overflow to generate pseudo random ids for btns
+          function dec2hex (dec) {
+            return dec.toString(16).padStart(2,"0")
+          }
+
+          function generateId (len) {
+            var arr = new Uint8Array((len || 40) / 2)
+            window.crypto.getRandomValues(arr)
+            return Array.from(arr, dec2hex).join('')
+          }
 
           function populate_row(obj, name){
             let row = document.createElement('tr')
@@ -122,10 +133,7 @@
             }
           }
 
-          function drop_down_click(class_name) {
-            let text = this.innerText;
-            //console.log(text)
-            //console.log(class_specifier)
+          function drop_down_click(btn_id,class_name) {
             let matched_courses = document.getElementsByClassName(class_name)
             for (matched_course in matched_courses){
               let m = matched_courses[matched_course]
@@ -136,7 +144,16 @@
                 m.style.display = "none"
               }
             }
-            
+          }
+
+          function drop_down_click_text(btn_id){
+            let btn = document.getElementById(btn_id);
+            console.log(btn.value)
+            if (btn.value == "Expand"){
+              btn.innerHTML = "Collapse"
+            } else if (btn.innerHTML == "Collapse"){
+              btn.innerHTML = "Expand"
+            }
           }
 
           function display_year(year,data){
@@ -154,8 +171,11 @@
               }
               title.innerText = `${relevant_match_count} Courses with a match:`
               title.classList.add('drop-down')
-              title.addEventListener("click", ()=>{
-                drop_down_click(`matched-course${year.toString().replace(/\s/g, "")}`)
+              str = generateId(20)
+              title.id = str.toString()
+              console.log(title.id)
+              title.addEventListener("click", function(){
+                drop_down_click("str.toString()",`matched-course${year.toString().replace(/\s/g, "")}`)
               })
               mat_n_unmat.appendChild(title)
               let sort_keys = Object.keys(data["matched courses"]).sort()
@@ -164,7 +184,10 @@
                 stuff_to_append = display_course(year,sort_keys[key],data["matched courses"][sort_keys[key]])
                 if (stuff_to_append != null){
                   //title.appendChild(stuff_to_append)
-                  mat_n_unmat.appendChild(stuff_to_append)
+                  while (stuff_to_append.length != 0){
+                    mat_n_unmat.appendChild(stuff_to_append.shift())
+                  }
+                  
                 }
               }
             }
@@ -182,7 +205,7 @@
               title.innerText = `${relevant_match_count} Courses with no match:`
               title.classList.add('drop-down')
               title.addEventListener("click", ()=>{
-                drop_down_click(`unmatched-course${year.toString().replace(/\s/g, "")}`)
+                drop_down_click(this,`unmatched-course${year.toString().replace(/\s/g, "")}`)
               })
               mat_n_unmat.appendChild(title)
               let sort_keys = Object.keys(data["unmatched courses"]).sort()
@@ -213,6 +236,7 @@
 
           function display_centr(year,course,results){
             centr_content_div = document.createElement('div')
+            centr_content_div.style.display = "none"
             centr_content_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-centr-content`)
 
             if (results["centrality"]["paths not in c2"].length != 0){
@@ -229,7 +253,7 @@
                 if (Object.keys(results["centrality"]["courses not in c2 paths"][course]["gained prereqs"]).length !=0 || 
                   Object.keys(results["centrality"]["courses not in c2 paths"][course]["lost prereqs"]).length !=0){
                   changed_course = document.createElement('div')
-                  changed_course_text = document.createElement('p')
+                  changed_course_text = document.createElement('b')
                   changed_course_text.innerText = `${course}:`
                   changed_course.appendChild(changed_course_text)
                   if (Object.keys(results["centrality"]["courses not in c2 paths"][course]["lost prereqs"]).length !=0){
@@ -238,7 +262,7 @@
                     for (loss in results["centrality"]["courses not in c2 paths"][course]["lost prereqs"]){
                       console.log(`LOSS: ${loss}`)
                       loss_element = document.createElement('li')
-                      loss_element.innerText = results["centrality"]["courses not in c2 paths"][course]["lost prereqs"][loss]
+                      loss_element.innerText = `${results["centrality"]["courses not in c2 paths"][course]["lost prereqs"][loss]} as a prereq`
                       loss_list.appendChild(loss_element)
                     }
                     changed_course.appendChild(loss_list)
@@ -248,7 +272,7 @@
                     gain_list.innerText = "gaining:"
                     for (gain in results["centrality"]["courses not in c2 paths"][course]["gained prereqs"]){
                       gain_element = document.createElement('li')
-                      gain_element.innerText = results["centrality"]["courses not in c2 paths"][course]["gained prereqs"][gain]
+                      gain_element.innerText = `${results["centrality"]["courses not in c2 paths"][course]["gained prereqs"][gain]} as a prereq`
                       gain_list.appendChild(gain_element)
                     }
                     changed_course.appendChild(gain_list)
@@ -273,7 +297,7 @@
                     Object.keys(results["centrality"]["courses not in c1 paths"][course]["lost prereqs"]).length !=0){
                   changed_course = document.createElement('div')
                   changed_course.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-centr-content-loss`)
-                  changed_course_text = document.createElement('p')
+                  changed_course_text = document.createElement('b')
                   changed_course_text.innerText = `${course}:`
                   changed_course.appendChild(changed_course_text)
                   if (Object.keys(results["centrality"]["courses not in c1 paths"][course]["lost prereqs"]).length !=0){
@@ -282,7 +306,7 @@
                     for (loss in results["centrality"]["courses not in c1 paths"][course]["lost prereqs"]){
                       console.log(`LOSS: ${loss}`)
                       loss_element = document.createElement('li')
-                      loss_element.innerText = results["centrality"]["courses not in c1 paths"][course]["lost prereqs"][loss]
+                      loss_element.innerText = `${results["centrality"]["courses not in c1 paths"][course]["lost prereqs"][loss]} as a prereq`
                       loss_list.appendChild(loss_element)
                     }
                     changed_course.appendChild(loss_list)
@@ -292,7 +316,7 @@
                     gain_list.innerText = "gaining:"
                     for (gain in results["centrality"]["courses not in c1 paths"][course]["gained prereqs"]){
                       gain_element = document.createElement('li')
-                      gain_element.innerText = results["centrality"]["courses not in c1 paths"][course]["gained prereqs"][gain]
+                      gain_element.innerText = `${results["centrality"]["courses not in c1 paths"][course]["gained prereqs"][gain]} as a prereq`
                       gain_list.appendChild(gain_element)
                     }
                     changed_course.appendChild(gain_list)
@@ -307,6 +331,7 @@
           function display_block(year,course,results){
             block_content_div = document.createElement('div')
             block_content_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-block-content`)
+            block_content_div.style.display = "none"
             if (results["blocking factor"]["length not in c2 ufield"]!=0){
                   // print "lost results[block][length not in c2 ufield] 
                   // print due to
@@ -318,7 +343,7 @@
                         Object.keys(results["blocking factor"]["not in c2 ufield"][course]["lost prereqs"]).length !=0 ||
                         Object.keys(results["blocking factor"]["not in c2 ufield"][course]["in_both"]).length !=0){
                       changed_course = document.createElement('div')
-                      changed_course_text = document.createElement('p')
+                      changed_course_text = document.createElement('b')
                       changed_course_text.innerText = `${course}:`
                       changed_course.appendChild(changed_course_text)
                       if (Object.keys(results["blocking factor"]["not in c2 ufield"][course]["lost prereqs"]).length !=0){
@@ -327,7 +352,7 @@
                         for (loss in results["blocking factor"]["not in c2 ufield"][course]["lost prereqs"]){
                           console.log(`LOSS: ${loss}`)
                           loss_element = document.createElement('li')
-                          loss_element.innerText = results["blocking factor"]["not in c2 ufield"][course]["lost prereqs"][loss]
+                          loss_element.innerText = `${results["blocking factor"]["not in c2 ufield"][course]["lost prereqs"][loss]} as a prereq`
                           loss_list.appendChild(loss_element)
                         }
                         changed_course.appendChild(loss_list)
@@ -337,7 +362,7 @@
                         gain_list.innerText = "gaining:"
                         for (gain in results["blocking factor"]["not in c2 ufield"][course]["gained prereqs"]){
                           gain_element = document.createElement('li')
-                          gain_element.innerText = results["blocking factor"]["not in c2 ufield"][course]["gained prereqs"][gain]
+                          gain_element.innerText = `${results["blocking factor"]["not in c2 ufield"][course]["gained prereqs"][gain]} as a prereq`
                           gain_list.appendChild(gain_element)
                         }
                         changed_course.appendChild(gain_list)
@@ -348,7 +373,7 @@
                         for (loss in results["blocking factor"]["not in c2 ufield"][course]["in_both"]){
                           console.log(`LOSS: ${loss}`)
                           loss_element = document.createElement('li')
-                          loss_element.innerText = results["blocking factor"]["not in c2 ufield"][course]["in_both"][loss]
+                          loss_element.innerText = `${results["blocking factor"]["not in c2 ufield"][course]["in_both"][loss]} as a prereq`
                           loss_list.appendChild(loss_element)
                         }
                         changed_course.appendChild(loss_list)
@@ -368,7 +393,7 @@
                         Object.keys(results["blocking factor"]["not in c1 ufield"][course]["lost prereqs"]).length !=0 ||
                         Object.keys(results["blocking factor"]["not in c1 ufield"][course]["in_both"]).length !=0){
                       changed_course = document.createElement('div')
-                      changed_course_text = document.createElement('p')
+                      changed_course_text = document.createElement('b')
                       changed_course_text.innerText = `${course}:`
                       changed_course.appendChild(changed_course_text)
                       if (Object.keys(results["blocking factor"]["not in c1 ufield"][course]["lost prereqs"]).length !=0){
@@ -377,7 +402,7 @@
                         for (loss in results["blocking factor"]["not in c1 ufield"][course]["lost prereqs"]){
                           console.log(`LOSS: ${loss}`)
                           loss_element = document.createElement('li')
-                          loss_element.innerText = results["blocking factor"]["not in c1 ufield"][course]["lost prereqs"][loss]
+                          loss_element.innerText = `${results["blocking factor"]["not in c1 ufield"][course]["lost prereqs"][loss]}`
                           loss_list.appendChild(loss_element)
                         }
                         changed_course.appendChild(loss_list)
@@ -387,7 +412,7 @@
                         gain_list.innerText = "gaining:"
                         for (gain in results["blocking factor"]["not in c1 ufield"][course]["gained prereqs"]){
                           gain_element = document.createElement('li')
-                          gain_element.innerText = results["blocking factor"]["not in c1 ufield"][course]["gained prereqs"][gain]
+                          gain_element.innerText = `${results["blocking factor"]["not in c1 ufield"][course]["gained prereqs"][gain]} as a prereq`
                           gain_list.appendChild(gain_element)
                         }
                         changed_course.appendChild(gain_list)
@@ -398,7 +423,7 @@
                         for (loss in results["blocking factor"]["not in c1 ufield"][course]["in_both"]){
                           console.log(`LOSS: ${loss}`)
                           loss_element = document.createElement('li')
-                          loss_element.innerText = results["blocking factor"]["not in c1 ufield"][course]["in_both"][loss]
+                          loss_element.innerText = `${results["blocking factor"]["not in c1 ufield"][course]["in_both"][loss]} as a prereq`
                           loss_list.appendChild(loss_element)
                         }
                         changed_course.appendChild(loss_list)
@@ -413,6 +438,7 @@
           function display_delay(year,course,results){
             delay_content_div = document.createElement('div')
             delay_content_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-delay-content`)
+            delay_content_div.style.display = "none"
             if (results["contribution to curriculum differences"]["delay factor"] > 0){
               // print gained ^ value
             } else {
@@ -437,7 +463,7 @@
                 if (Object.keys(results["delay factor"]["courses involved"][course]["gained prereqs"]).length !=0 || 
                     Object.keys(results["delay factor"]["courses involved"][course]["lost prereqs"]).length !=0){
                   changed_course = document.createElement('div')
-                  changed_course_text = document.createElement('p')
+                  changed_course_text = document.createElement('b')
                   changed_course_text.innerText = `${course}:`
                   changed_course.appendChild(changed_course_text)
                   if (Object.keys(results["delay factor"]["courses involved"][course]["lost prereqs"]).length !=0){
@@ -446,7 +472,7 @@
                     for (loss in results["delay factor"]["courses involved"][course]["lost prereqs"]){
                       console.log(`LOSS: ${loss}`)
                       loss_element = document.createElement('li')
-                      loss_element.innerText = results["delay factor"]["courses involved"][course]["lost prereqs"][loss]
+                      loss_element.innerText = `${results["delay factor"]["courses involved"][course]["lost prereqs"][loss]} as a prereq`
                       loss_list.appendChild(loss_element)
                     }
                     changed_course.appendChild(loss_list)
@@ -456,7 +482,7 @@
                     gain_list.innerText = "gaining:"
                     for (gain in results["delay factor"]["courses involved"][course]["gained prereqs"]){
                       gain_element = document.createElement('li')
-                      gain_element.innerText = results["delay factor"]["courses involved"][course]["gained prereqs"][gain]
+                      gain_element.innerText = `${results["delay factor"]["courses involved"][course]["gained prereqs"][gain]} as a prereq`
                       gain_list.appendChild(gain_element)
                     }
                     changed_course.appendChild(gain_list)
@@ -471,18 +497,39 @@
           function display_course(year,course,results){
             //console.log(course)
             //console.log(results)
+            ret = []
             if (results["contribution to curriculum differences"]["centrality"] != 0 || 
             results["contribution to curriculum differences"]["blocking factor"]!=0 ||
             results["contribution to curriculum differences"]["delay factor"]!=0 ){
               course_info = document.createElement('div')
               course_header = document.createElement('div')
-              course_header.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-centr-title`)
+              course_header.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-title`)
               course_name = document.createElement('h4')
               course_name.innerText = `${course}:`
+              course_btn = document.createElement('button')
+              course_btn.innerText = "Expand/Collapse"
+              course_header.appendChild(course_name)
+              course_header.appendChild(course_btn)
+              course_info.appendChild(course_header)
+              //ret.push(course_name)
               //course_info = document.createElement('div')
               // course_name.style.display = "none"
               // do centrality
               console.log(course)
+              course_content = document.createElement('div')
+              course_content.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-content`)
+              course_content.style.display = "none"
+              course_content.style.border = "dotted"
+              var str = generateId(20)
+              course_btn.id = str.toString()
+              course_btn.addEventListener("click", function() {
+                str = course_btn.getAttribute("id")
+                drop_down_click(str.toString(),`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-content`)
+              })
+              course_btn.addEventListener("click", function(){
+                str = course_btn.getAttribute("id")
+                drop_down_click_text(str)
+              })
               console.log(results["contribution to curriculum differences"]["centrality"])
               if (results["contribution to curriculum differences"]["centrality"] != 0){
                 // holds the whole set
@@ -495,62 +542,83 @@
                 centr_header = document.createElement('h5')
                 centr_header.innerText = "Centrality Factor:"
                 centr_header_btn = document.createElement('button')
-                centr_header_btn.innerText = "Expand"
-
+                centr_header_btn.innerText = "Expand/Collapse"
                 // build content
                 centr_content_div = display_centr(year,course,results)
-
                 // Hook up button to centr_content
-                centr_header_btn.addEventListener("click", function(){
-                  drop_down_click(centr_content_div.getAttribute('class'))
-                })
-
+                centr_header_btn.id = generateId(20)
+                centr_header_btn.addEventListener("click", ()=>{
+                  drop_down_click(centr_header_btn.id,`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-centr-content`)
+                }) 
                 // hook up header stuff to header div
                 centr_header_div.appendChild(centr_header)
                 centr_header_div.appendChild(centr_header_btn)
-                
                 centr_div.appendChild(centr_header_div)
                 centr_div.appendChild(centr_content_div)
-                course_name.appendChild(centr_div)
+                //ret.push(centr_div)
+                course_content.appendChild(centr_div)
               }
 
               // do blocking factor
               if (results["contribution to curriculum differences"]["blocking factor"]!=0){
                 block_div = document.createElement('div')
                 block_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-block`)
+                block_header_div = document.createElement('div')
+                block_header_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-block-header`)
                 block_header = document.createElement('h5')
                 block_header.innerText = "Blocking Factor:"
-            
+                block_header_btn = document.createElement('button')
+                block_header_btn.innerText = "Expand/Collapse"
                 block_content_div = display_block(year,course,results)
-                block_div.appendChild(block_header)
+                block_header_btn.id = generateId(20)
+                block_header_btn.addEventListener("click", ()=>{
+                  drop_down_click(block_header_btn.id,`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-block-content`)
+                }) 
+                block_header_div.appendChild(block_header)
+                block_header_div.appendChild(block_header_btn)
+                block_div.appendChild(block_header_div)
                 block_div.appendChild(block_content_div)
-                course_name.appendChild(block_div)
+                //ret.push(block_div)
+                course_content.appendChild(block_div)
               }
               // do delay factor
               if (results["contribution to curriculum differences"]["delay factor"]!=0){
                 delay_div = document.createElement('div')
                 delay_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-delay`)
-                let delay_header = document.createElement("h5")
+                delay_header_div = document.createElement('div')
+                delay_header_div.classList.add(`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-delay-header`)
+                delay_header = document.createElement("h5")
                 delay_header.innerText = "Delay Factor:"
-                
+                delay_header_btn = document.createElement('button')
+                delay_header_btn.innerText = "Expand/Collapse"
                 delay_content_div = display_delay(year,course,results)
-                delay_div.appendChild(delay_header)
+                delay_header_btn.id = generateId(20)
+                delay_header_btn.addEventListener("click", ()=>{
+                  drop_down_click(delay_header_btn.id,`matched-course${year.toString().replace(/\s/g, "")}-${course.toString().replace(/\s/g, "")}-delay-content`)
+                }) 
+                delay_header_div.appendChild(delay_header)
+                delay_header_div.appendChild(delay_header_btn)
+                delay_div.appendChild(delay_header_div)
                 delay_div.appendChild(delay_content_div)
-                course_name.appendChild(delay_div)
+                //ret.push(delay_div)
+                course_content.appendChild(delay_div)
               }
               //course_name.appendChild(course_info)
               course_info.classList.add(`matched-course${year.toString().replace(/\s/g, "")}`)
               course_info.style.display = "none"
-              course_info.appendChild(course_name)
-              return course_info
+              course_info.appendChild(course_content)
+              ret.push(course_info)
+              //return course_info
+              ret.push
             } else {
               course_info = document.createElement('div')
               course_info.classList.add('matched-course')
               course_name = document.createElement('p')
               course_info.appendChild(course_name)
               //course_name.innerText = `No differences to report for ${course}`
-              return course_info
+              //return course_info
             }
+            return ret
           }
 
           function display_unmatched_course(year,course,data){
