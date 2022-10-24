@@ -12,27 +12,19 @@ I remove a prereq?
 @enum Edit_Type add del
 
 # What if I add a course?
-function add_course(curr::Curriculum, course_name::AbstractString, credit_hours::Real, prereqs::Vector{Dict{String,Requisite}}, dependencies::Vector{Dict{String,Requisite}})
+function add_course(curr::Curriculum, course_name::AbstractString, credit_hours::Real, prereqs::Dict{String,Requisite}, dependencies::Dict{String,Requisite})
     ## create the course in the curricular analytics sense
     new_course = Course(course_name, credit_hours)
 
     modded_curric = deepcopy(curr)
     ## hook it up to the curriculum
     # loop through the names of its prereqs and find them in modded_curric (so we don't alter the original)
-    for prereq_pair in prereqs
-        println(prereq_pair)
-        prereq_keys = collect(keys(prereq_pair))
-        println(prereq_keys)
-        prereq = prereq_keys[1]
-        req_type = prereq_pair[prereq]
+    for (prereq, req_type) in prereqs
         prereq_course = course_from_name(modded_curric, prereq)
         add_requisite!(prereq_course, new_course, req_type)
     end
     # loop through the names of its dependencies and find them in modded_curric
-    for dep_pair in dependencies
-        dep_keys = collect(keys(dep_pair))
-        dep = dep_keys[1]
-        type = dep_pair[dep]
+    for (dep, type) in dependencies
         dependent_course = course_from_name(modded_curric, dep)
         add_requisite!(new_course, dependent_course, type)
     end
