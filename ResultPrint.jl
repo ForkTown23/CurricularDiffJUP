@@ -9,7 +9,7 @@ function executive_summary_course(results::Dict{String,Any}, course_name::Abstra
             # find the total sum of paths not in c2
             lost_paths = sum(length(path) for path in results["centrality"]["paths not in c2"])
             print(GREEN_BG, "Lost $(lost_paths) centrality ")
-            print(BLACK_BG, "due to:\n")
+            print(Crayon(reset=true), "due to:\n")
             for (key, course) in results["centrality"]["courses not in c2 paths"]
                 if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0)
                     print("\t$key:")
@@ -33,7 +33,7 @@ function executive_summary_course(results::Dict{String,Any}, course_name::Abstra
             # find the total sum of paths not in c1
             gained_paths = sum(length(path) for path in results["centrality"]["paths not in c1"])
             print(RED_BG, "Gained $(gained_paths) centrality ")
-            print(BLACK_BG, "due to:\n")
+            print(Crayon(reset=true), "due to:\n")
             for (key, course) in results["centrality"]["courses not in c1 paths"]
                 if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0)
                     print("\t$key:")
@@ -57,7 +57,7 @@ function executive_summary_course(results::Dict{String,Any}, course_name::Abstra
     if (results["contribution to curriculum differences"]["blocking factor"] != 0.0)
         if (results["blocking factor"]["length not in c2 ufield"] != 0)
             print(GREEN_BG, "Lost $(results["blocking factor"]["length not in c2 ufield"]) courses in blocking factor ")
-            print(BLACK_BG, "due to:\n")
+            print(Crayon(reset=true), "due to:\n")
             for (key, course) in results["blocking factor"]["not in c2 ufield"]
                 if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0 || length(course["in_both"]) != 0)
                     print("\t$key")
@@ -86,7 +86,7 @@ function executive_summary_course(results::Dict{String,Any}, course_name::Abstra
         end
         if (results["blocking factor"]["length not in c1 ufield"] != 0)
             print(RED_BG, "Gained $(results["blocking factor"]["length not in c1 ufield"]) courses in blocking factor ")
-            print(BLACK_BG, "due to:\n")
+            print(Crayon(reset=true), "due to:\n")
             for (key, course) in results["blocking factor"]["not in c1 ufield"]
                 if (length(course["gained prereqs"]) != 0 || length(course["lost prereqs"]) != 0 || length(course["in_both"]) != 0)
                     print("\t$key")
@@ -120,7 +120,7 @@ function executive_summary_course(results::Dict{String,Any}, course_name::Abstra
         else
             print(GREEN_BG, "Lost $(abs(results["contribution to curriculum differences"]["delay factor"]))")
         end
-        print(BLACK_BG, "\nWent from: ") # important, stops red/green from overflowing for some reason
+        print(Crayon(reset=true), "\nWent from: ") # important, stops red/green from overflowing for some reason
         pretty_print_course_names(results["delay factor"]["df path course 1"])
         print("Length: $(results["delay factor"]["course 1 score"])\n")
         print("To: ")
@@ -153,24 +153,24 @@ function executive_summary_unmatched_course(results::Dict{}, course_name::Abstra
     println("$course_name:")
     if (results["contribution to curriculum differences"]["centrality"] != 0.0)
         # if it's a C1-only course, it lost everything
-        results["c1"] ? print(GREEN_BG("Lost $(results["centrality"]) centrality. ", BLACK_BG("Course doesn't exist in curriculum 2"))) :
-        print(RED_BG("Gained $(results["centrality"]) centrality. ", BLACK_BG("Course doesn't exist in curriculum 1")))
+        results["c1"] ? print(GREEN_BG("Lost $(results["centrality"]) centrality. ", Crayon(reset=true), "Course doesn't exist in curriculum 2")) :
+        print(RED_BG("Gained $(results["centrality"]) centrality. ", Crayon(reset=true), "Course doesn't exist in curriculum 1"))
 
-        print(BLACK_BG, "\n")
+        print(Crayon(reset=true), "\n")
     end
     if (results["contribution to curriculum differences"]["blocking factor"] != 0.0)
         # if it's a C1-only course, it lost everything
-        results["c1"] ? print(GREEN_BG("Lost $(results["blocking factor"]) blocking factor. ", BLACK_BG("Course doesn't exist in curriculum 2"))) :
-        print(RED_BG("Gained $(results["blocking factor"]) blocking factor. ", BLACK_BG("Course doesn't exist in curriculum 1")))
+        results["c1"] ? print(GREEN_BG("Lost $(results["blocking factor"]) blocking factor. ", Crayon(reset=true), "Course doesn't exist in curriculum 2")) :
+        print(RED_BG("Gained $(results["blocking factor"]) blocking factor. ", Crayon(reset=true), "Course doesn't exist in curriculum 1"))
 
-        print(BLACK_BG, "\n")
+        print(Crayon(reset=true), "\n")
     end
     if (results["contribution to curriculum differences"]["delay factor"] != 0.0)
         # if it's a C1-only course, it lost everything
-        results["c1"] ? print(GREEN_BG("Lost $(results["delay factor"]) delay factor. ", BLACK_BG("Course doesn't exist in curriculum 2"))) :
-        print(RED_BG("Gained $(results["delay factor"]) delay factor. ", BLACK_BG("Course doesn't exist in curriculum 1")))
+        results["c1"] ? print(GREEN_BG("Lost $(results["delay factor"]) delay factor. ", Crayon(reset=true), "Course doesn't exist in curriculum 2")) :
+        print(RED_BG("Gained $(results["delay factor"]) delay factor. ", Crayon(reset=true), "Course doesn't exist in curriculum 1"))
 
-        print(BLACK_BG, "\n")
+        print(Crayon(reset=true), "\n")
     end
 
 end
@@ -200,9 +200,9 @@ function pretty_print_centrality_results(results::Dict{String,Any})
     results["contribution to curriculum differences"]["centrality"] <= 0 ?
     print(GREEN_BG, results["contribution to curriculum differences"]["centrality"]) :
     print(RED_BG, results["contribution to curriculum differences"]["centrality"])
-    print(BLACK_BG, "\n")
+    print(Crayon(reset=true), "\n")
 
-    print(BLACK_BG, "Curriculum 1 score: $(results["centrality"]["course 1 score"])\tCurriculum 2 score: $(results["centrality"]["course 2 score"])\n")
+    print(Crayon(reset=true), "Curriculum 1 score: $(results["centrality"]["course 1 score"])\tCurriculum 2 score: $(results["centrality"]["course 2 score"])\n")
 
     if ("paths not in c2" in keys(results["centrality"]))
         print("Paths not in Curriculum 2:\n")
@@ -275,9 +275,9 @@ function pretty_print_complexity_results(results::Dict{String,Any})
     print(GREEN_BG, results["contribution to curriculum differences"]["complexity"]) :
     print(RED_BG, results["contribution to curriculum differences"]["complexity"])
 
-    print(BLACK_BG, "\n")
+    print(Crayon(reset=true), "\n")
 
-    print(BLACK_BG, "Score in Curriculum 1: $(results["complexity"]["course 1 score"]) \t Score in Curriculum 2: $(results["complexity"]["course 2 score"])\n")
+    print(Crayon(reset=true), "Score in Curriculum 1: $(results["complexity"]["course 1 score"]) \t Score in Curriculum 2: $(results["complexity"]["course 2 score"])\n")
 
     pretty_print_blocking_factor_results(results)
     pretty_print_delay_factor_results(results)
@@ -289,12 +289,12 @@ function pretty_print_blocking_factor_results(results::Dict{String,Any})
     results["contribution to curriculum differences"]["blocking factor"] <= 0 ?
     print(GREEN_BG, results["contribution to curriculum differences"]["blocking factor"]) :
     print(RED_BG, results["contribution to curriculum differences"]["blocking factor"])
-    print(BLACK_BG, "\n")
+    print(Crayon(reset=true), "\n")
 
-    print(BLACK_BG, "Score in Curriculum 1: $(results["blocking factor"]["course 1 score"])")
-    print(BLACK_BG, "\t")
-    print(BLACK_BG, "Score in Curriculum 2: $(results["blocking factor"]["course 2 score"])")
-    print(BLACK_BG, "\n")
+    print(Crayon(reset=true), "Score in Curriculum 1: $(results["blocking factor"]["course 1 score"])")
+    print(Crayon(reset=true), "\t")
+    print(Crayon(reset=true), "Score in Curriculum 2: $(results["blocking factor"]["course 2 score"])")
+    print(Crayon(reset=true), "\n")
 
     if ("not in c2 ufield" in keys(results["blocking factor"]))
         if (length(results["blocking factor"]["not in c2 ufield"]) != 0)
@@ -379,9 +379,9 @@ function pretty_print_delay_factor_results(results::Dict{String,Any})
     results["contribution to curriculum differences"]["delay factor"] <= 0 ?
     print(GREEN_BG, results["contribution to curriculum differences"]["delay factor"]) :
     print(RED_BG, results["contribution to curriculum differences"]["delay factor"])
-    print(BLACK_BG, "\n")
+    print(Crayon(reset=true), "\n")
 
-    print(BLACK_BG, "Score in Curriculum 1: $(results["delay factor"]["course 1 score"])\t Score in Curriculum 2: $(results["delay factor"]["course 2 score"])\n")
+    print(Crayon(reset=true), "Score in Curriculum 1: $(results["delay factor"]["course 1 score"])\t Score in Curriculum 2: $(results["delay factor"]["course 2 score"])\n")
 
     if ("df path course 1" in keys(results["delay factor"])) # if there's one there both
         print("Delay Factor Path in Curriculum 1:\n")
