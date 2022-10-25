@@ -1,4 +1,4 @@
-using CurricularAnalytics, Crayons.Box, CSV
+using CurricularAnalytics, Crayons, Crayons.Box, CSV
 include("./HelperFns.jl")
 
 # all, centrality, complexity, blocking, delay, prereq
