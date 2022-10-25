@@ -1,4 +1,4 @@
-using CurricularAnalytics, CSV
+using CurricularAnalytics, CSV, Crayons
 
 function course_match(course1_name::AbstractString, course2_name::AbstractString, all_redundants::Matrix)
     if (course1_name == course2_name)
@@ -68,9 +68,9 @@ end
 
 function pretty_print_course_names(courses::Vector{})
     for course in courses
-        print(BLACK_BG, "$(course)➡️")
+        print(Crayon(reset=true), "$(course)➡️")
     end
-    print(BLACK_BG, " \n")
+    print(Crayon(reset=true), " \n")
 end
 
 function courses_to_course_names(courses::Vector{})

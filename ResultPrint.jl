@@ -153,22 +153,22 @@ function executive_summary_unmatched_course(results::Dict{}, course_name::Abstra
     println("$course_name:")
     if (results["contribution to curriculum differences"]["centrality"] != 0.0)
         # if it's a C1-only course, it lost everything
-        results["c1"] ? print(GREEN_BG("Lost $(results["centrality"]) centrality. ", Crayon(reset=true), "Course doesn't exist in curriculum 2")) :
-        print(RED_BG("Gained $(results["centrality"]) centrality. ", Crayon(reset=true), "Course doesn't exist in curriculum 1"))
+        results["c1"] ? print(GREEN_BG("Lost $(results["centrality"]) centrality. "), Crayon(reset=true), "Course doesn't exist in curriculum 2") :
+        print(RED_BG("Gained $(results["centrality"]) centrality. "), Crayon(reset=true), "Course doesn't exist in curriculum 1")
 
         print(Crayon(reset=true), "\n")
     end
     if (results["contribution to curriculum differences"]["blocking factor"] != 0.0)
         # if it's a C1-only course, it lost everything
-        results["c1"] ? print(GREEN_BG("Lost $(results["blocking factor"]) blocking factor. ", Crayon(reset=true), "Course doesn't exist in curriculum 2")) :
-        print(RED_BG("Gained $(results["blocking factor"]) blocking factor. ", Crayon(reset=true), "Course doesn't exist in curriculum 1"))
+        results["c1"] ? print(GREEN_BG("Lost $(results["blocking factor"]) blocking factor. "), Crayon(reset=true), "Course doesn't exist in curriculum 2") :
+        print(RED_BG("Gained $(results["blocking factor"]) blocking factor. "), Crayon(reset=true), "Course doesn't exist in curriculum 1")
 
         print(Crayon(reset=true), "\n")
     end
     if (results["contribution to curriculum differences"]["delay factor"] != 0.0)
         # if it's a C1-only course, it lost everything
-        results["c1"] ? print(GREEN_BG("Lost $(results["delay factor"]) delay factor. ", Crayon(reset=true), "Course doesn't exist in curriculum 2")) :
-        print(RED_BG("Gained $(results["delay factor"]) delay factor. ", Crayon(reset=true), "Course doesn't exist in curriculum 1"))
+        results["c1"] ? print(GREEN_BG("Lost $(results["delay factor"]) delay factor. "), Crayon(reset=true), "Course doesn't exist in curriculum 2") :
+        print(RED_BG("Gained $(results["delay factor"]) delay factor. "), Crayon(reset=true), "Course doesn't exist in curriculum 1")
 
         print(Crayon(reset=true), "\n")
     end
