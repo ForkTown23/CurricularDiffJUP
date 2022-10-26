@@ -33,7 +33,7 @@ function add_course(curr::Curriculum, course_name::AbstractString, credit_hours:
     course_list = modded_curric.courses
     push!(course_list, new_course)
 
-    new_curric = Curriculum("Proposed Curriculum", course_list)
+    new_curric = Curriculum("Proposed Curriculum", course_list, system_type=curr.system_type)
 
 end
 
@@ -63,7 +63,7 @@ function remove_course(curr::Curriculum, course_name::AbstractString)
         end
     end
 
-    new_curric = Curriculum("Proposed Curriculum", new_course_list)
+    new_curric = Curriculum("Proposed Curriculum", new_course_list, system_type=curr.system_type)
 end
 
 # What if I add a prereq to this course?
@@ -73,7 +73,7 @@ function add_prereq(curr::Curriculum, course_name::AbstractString, added_prereq:
     target_course = course_from_name(modded_curric, course_name)
     added_prq = course_from_name(modded_curric, added_prereq)
     add_requisite!(added_prq, target_course, reqtype)
-    new_curric = Curriculum("Proposed Curriculum", modded_curric.courses)
+    new_curric = Curriculum("Proposed Curriculum", modded_curric.courses, system_type=curr.system_type)
 end
 
 # What if I remove to_remove from course_name?
@@ -83,5 +83,5 @@ function remove_prereq(curr::Curriculum, course_name::AbstractString, to_remove:
     course = course_from_name(modded_curric, course_name)
     to_remove_course = course_from_name(modded_curric, to_remove)
     delete_requisite!(to_remove_course, course)
-    new_curric = Curriculum("Proposed Curriculum", modded_curric.courses)
+    new_curric = Curriculum("Proposed Curriculum", modded_curric.courses, system_type=curr.system_type)
 end
