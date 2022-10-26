@@ -1,3 +1,5 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ForkTown23/CurricularDiffJUP/HEAD)
+
 Todo:
 - [x] Verbose print of two curricula
 - [x] Verbose option
