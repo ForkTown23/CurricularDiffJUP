@@ -51,3 +51,8 @@ Todo:
 - [x] Added C1 and C2 name field to output
 - [ ] Consider a "verbose" detective that finds possible cases where things have changed but balanced out
 - [x] Script for massive production
+
+
+TODO:
+FIx the fact that new curriculums have a semester system (i.e. make new_curric match the type of the original)
+Add option to ignore courses where changes are 0 in pretty_print. It's very very long if you do every course but it's all 0s
